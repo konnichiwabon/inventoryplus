@@ -73,9 +73,11 @@
   margin-left: 84px;
   padding: 40px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 32px;
+  align-content: start;
+  align-items: flex-start;
   min-height: 100vh;
   box-sizing: border-box;
 }

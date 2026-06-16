@@ -482,29 +482,26 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
         <section
           className="grid relative overflow-hidden"
           style={{
-            height: '80svh',
-            maxHeight: '540px',
+            height: '440px',
+            maxHeight: '440px',
             aspectRatio: '0.718',
             borderRadius: cardRadius,
             backgroundBlendMode: 'color-dodge, normal, normal, normal',
             boxShadow:
               'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px',
-            transition: 'transform 1s ease',
+            transition: 'transform 1s ease, height 0.4s ease, width 0.4s ease, max-height 0.4s ease',
             transform: 'translateZ(0) rotateX(0deg) rotateY(0deg)',
             background: 'rgba(0, 0, 0, 0.9)',
             backfaceVisibility: 'hidden'
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.transition = 'none';
+            e.currentTarget.style.transition = 'height 0.4s ease, width 0.4s ease, max-height 0.4s ease';
             e.currentTarget.style.transform = 'translateZ(0) rotateX(var(--rotate-y)) rotateY(var(--rotate-x))';
           }}
           onMouseLeave={e => {
             const shell = shellRef.current;
-            if (shell?.classList.contains('entering')) {
-              e.currentTarget.style.transition = 'transform 180ms ease-out';
-            } else {
-              e.currentTarget.style.transition = 'transform 1s ease';
-            }
+            const dur = shell?.classList.contains('entering') ? '180ms' : '1s';
+            e.currentTarget.style.transition = `transform ${dur} ease-out, height 0.4s ease, width 0.4s ease, max-height 0.4s ease`;
             e.currentTarget.style.transform = 'translateZ(0) rotateX(0deg) rotateY(0deg)';
           }}
         >
