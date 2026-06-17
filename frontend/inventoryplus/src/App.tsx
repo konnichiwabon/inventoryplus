@@ -66,19 +66,22 @@ function App() {
             >
               ← Back to Departments
             </button>
-            
+
             <div style={{ color: '#fff' }}>
               <h2 style={{ fontSize: '2rem', margin: '0 0 8px 0', fontWeight: 700 }}>
                 {selectedDepartment} Team
               </h2>
             </div>
 
-            <DepartmentPeopleList 
+            <DepartmentPeopleList
               items={[
                 `Sarah Connor (${selectedDepartment} Lead)`,
                 `John Doe (Senior Developer)`,
                 `Jane Smith (UX Designer)`,
-                `Alex Rivera (Product Manager)`
+                `Alex Rivera (Product Manager)`,
+                `Emma Watson (QA Engineer)`,
+                `Emperor (Big Boss)`,
+                `Eyyy(Sheesh)`
               ]}
               onItemSelect={(name) => console.log('Selected team member:', name)}
             />
@@ -106,10 +109,10 @@ function App() {
 
             <AnimatedCardGrid gap={32} cardWidth={316} cardHeight={440}>
               {cards.map((card) => (
-                <ProfileCard 
-                  key={card.id} 
-                  {...card} 
-                  onCardClick={() => setSelectedDepartment(card.name)} 
+                <ProfileCard
+                  key={card.id}
+                  {...card}
+                  onCardClick={() => setSelectedDepartment(card.name)}
                 />
               ))}
             </AnimatedCardGrid>
