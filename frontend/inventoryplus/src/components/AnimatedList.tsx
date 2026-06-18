@@ -73,8 +73,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
     const [topGradientOpacity, setTopGradientOpacity] = useState<number>(0);
     const [bottomGradientOpacity, setBottomGradientOpacity] = useState<number>(1);
 
-    const handleItemMouseEnter = useCallback((index: number) => {
-        setSelectedIndex(index);
+    const handleItemMouseEnter = useCallback((_index: number) => {
+        // No-op to retain click selection
     }, []);
 
     const handleItemClick = useCallback(

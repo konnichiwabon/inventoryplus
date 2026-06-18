@@ -94,7 +94,7 @@
 
 @media (min-width: 1025px) {
   .app-main.sidebar-open {
-    margin-right: 340px; /* Space for the 320px wide right sidebar + 20px gap */
+    margin-right: 380px; /* Space for the 360px wide right sidebar + 20px gap */
   }
 }
 

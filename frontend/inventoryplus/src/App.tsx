@@ -5,6 +5,7 @@ import { SidebarNavigationSlimDemo } from './components/sidebar'
 import './App.css'
 import DepartmentPeopleList from './components/departmentPeopleList'
 import RightSidebar from './components/rightsidebar'
+
 const cardProps = {
   name: "EDDT",
   title: "EHANCE ARMAMENT",
@@ -25,6 +26,7 @@ const cardProps = {
 function App() {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [showRightSidebar, setShowRightSidebar] = useState(false);
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(-1);
 
   const [cards, setCards] = useState([
     { id: 1, ...cardProps, name: "Engineering" },
@@ -38,6 +40,16 @@ function App() {
     setCards([...cards, { id: Date.now(), ...cardProps, name: `Department ${cards.length + 1}` }])
   }
 
+  const memberList = selectedDepartment ? [
+    `Sarah Connor (${selectedDepartment} Lead)`,
+    `John Doe (Senior Developer)`,
+    `Jane Smith (UX Designer)`,
+    `Alex Rivera (Product Manager)`,
+    `Emma Watson (QA Engineer)`,
+    `Emperor (Big Boss)`,
+    `Eyyy(Sheesh)`
+  ] : [];
+
   return (
     <div className="app-layout">
       <SidebarNavigationSlimDemo />
@@ -47,7 +59,6 @@ function App() {
             <button
               onClick={() => {
                 setSelectedDepartment(null);
-                setShowRightSidebar(false);
               }}
               style={{
                 padding: '10px 18px',
@@ -78,21 +89,16 @@ function App() {
               </h2>
             </div>
 
-            <DepartmentPeopleList
-              items={[
-                `Sarah Connor (${selectedDepartment} Lead)`,
-                `John Doe (Senior Developer)`,
-                `Jane Smith (UX Designer)`,
-                `Alex Rivera (Product Manager)`,
-                `Emma Watson (QA Engineer)`,
-                `Emperor (Big Boss)`,
-                `Eyyy(Sheesh)`
-              ]}
-              onItemSelect={(name) => {
-                console.log('Selected team member:', name);
-                setShowRightSidebar(true);
-              }}
-            />
+            {!showRightSidebar && (
+              <DepartmentPeopleList
+                items={memberList}
+                onItemSelect={(name, index) => {
+                  console.log('Selected team member:', name, 'at index:', index);
+                  setSelectedMemberIndex(index);
+                  setShowRightSidebar(true);
+                }}
+              />
+            )}
           </div>
         ) : (
           <>
@@ -120,14 +126,27 @@ function App() {
                 <ProfileCard
                   key={card.id}
                   {...card}
-                  onCardClick={() => setSelectedDepartment(card.name)}
+                  onCardClick={() => {
+                    setSelectedDepartment(card.name);
+                    setShowRightSidebar(false);
+                    setSelectedMemberIndex(-1);
+                  }}
                 />
               ))}
             </AnimatedCardGrid>
           </>
         )}
       </main>
-      <RightSidebar isOpen={showRightSidebar} onClose={() => setShowRightSidebar(false)} />
+      <RightSidebar
+        isOpen={showRightSidebar}
+        title={`${selectedDepartment || ''} Team`}
+        items={memberList}
+        onClose={() => {
+          setShowRightSidebar(false);
+          setSelectedMemberIndex(-1);
+        }}
+        initialSelectedIndex={selectedMemberIndex}
+      />
     </div>
   )
 }
