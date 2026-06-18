@@ -4,6 +4,7 @@ import AnimatedCardGrid from './components/AnimatedCardGrid'
 import { SidebarNavigationSlimDemo } from './components/sidebar'
 import './App.css'
 import DepartmentPeopleList from './components/departmentPeopleList'
+import RightSidebar from './components/rightsidebar'
 const cardProps = {
   name: "EDDT",
   title: "EHANCE ARMAMENT",
@@ -23,6 +24,7 @@ const cardProps = {
 
 function App() {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
+  const [showRightSidebar, setShowRightSidebar] = useState(false);
 
   const [cards, setCards] = useState([
     { id: 1, ...cardProps, name: "Engineering" },
@@ -39,11 +41,14 @@ function App() {
   return (
     <div className="app-layout">
       <SidebarNavigationSlimDemo />
-      <main className="app-main" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '20px', width: '100%' }}>
+      <main className={`app-main ${showRightSidebar ? 'sidebar-open' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '20px', width: '100%' }}>
         {selectedDepartment ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', width: '100%' }}>
             <button
-              onClick={() => setSelectedDepartment(null)}
+              onClick={() => {
+                setSelectedDepartment(null);
+                setShowRightSidebar(false);
+              }}
               style={{
                 padding: '10px 18px',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
@@ -83,7 +88,10 @@ function App() {
                 `Emperor (Big Boss)`,
                 `Eyyy(Sheesh)`
               ]}
-              onItemSelect={(name) => console.log('Selected team member:', name)}
+              onItemSelect={(name) => {
+                console.log('Selected team member:', name);
+                setShowRightSidebar(true);
+              }}
             />
           </div>
         ) : (
@@ -119,6 +127,7 @@ function App() {
           </>
         )}
       </main>
+      <RightSidebar isOpen={showRightSidebar} onClose={() => setShowRightSidebar(false)} />
     </div>
   )
 }
