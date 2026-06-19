@@ -41,6 +41,11 @@ const navItemsDualTier: (NavItemType & { icon: FC<{ className?: string }> })[] =
         ],
     },
     {
+        label: "Inventory",
+        href: "/inventory",
+        icon: Package,
+    },
+    {
         label: "Dashboard",
         href: "/dashboard",
         icon: BarChartSquare02,
@@ -84,9 +89,23 @@ const navItemsDualTier: (NavItemType & { icon: FC<{ className?: string }> })[] =
     },
 ];
 
-export const SidebarNavigationSlimDemo = () => (
+export const SidebarNavigationSlimDemo = ({
+    activeIndex,
+    onItemSelect,
+    activeSub,
+    onSubSelect,
+}: {
+    activeIndex?: number;
+    onItemSelect?: (index: number) => void;
+    activeSub?: string | null;
+    onSubSelect?: (label: string) => void;
+}) => (
     <SidebarNavigationSlim
         items={navItemsDualTier}
+        activeIndex={activeIndex}
+        onItemSelect={onItemSelect}
+        activeSub={activeSub}
+        onSubSelect={onSubSelect}
         footerItems={[
             {
                 label: "Support",
