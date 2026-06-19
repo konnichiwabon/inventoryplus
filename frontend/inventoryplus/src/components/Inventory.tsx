@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import ProfileCard from './profileCard';
 import AnimatedCardGrid from './AnimatedCardGrid';
 import DepartmentPeopleList from './departmentPeopleList';
@@ -152,7 +152,7 @@ export default function Inventory({
           {selectedMemberIndex !== -1 && memberList[selectedMemberIndex] && (() => {
             const selectedMemberName = memberList[selectedMemberIndex];
             const name = selectedMemberName.split(' (')[0];
-            
+
             const getMemberWorkstationSpecs = (mName: string, dept: string) => {
               if (mName.includes("Sarah Connor")) {
                 return {
@@ -197,7 +197,7 @@ export default function Inventory({
                   ]
                 };
               }
-              
+
               return {
                 system: [
                   { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
