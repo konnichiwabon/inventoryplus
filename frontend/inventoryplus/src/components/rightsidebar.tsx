@@ -117,6 +117,25 @@ export default function RightSidebar({ isOpen, title, items, onClose, onItemSele
                     flex: 1;
                 }
 
+                /* Selected Item Violet Highlight Overrides */
+                .rs-animated-list .item.selected {
+                    border-color: #7F56D9 !important;
+                    background-color: #F9F5FF !important;
+                    box-shadow: 0 0 0 1px #7F56D9, 0 4px 12px rgba(127, 86, 217, 0.08) !important;
+                }
+                .rs-animated-list .item.selected .item-text {
+                    color: #7F56D9 !important;
+                    font-weight: 600 !important;
+                }
+                .dark .rs-animated-list .item.selected {
+                    border-color: #9E77ED !important;
+                    background-color: rgba(158, 119, 237, 0.12) !important;
+                    box-shadow: 0 0 0 1px #9E77ED, 0 4px 12px rgba(158, 119, 237, 0.15) !important;
+                }
+                .dark .rs-animated-list .item.selected .item-text {
+                    color: #9E77ED !important;
+                }
+
                 /* ── Responsiveness ── */
                 @media (max-width: 480px) {
                     .rs-sidebar-container {
