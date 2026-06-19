@@ -6,6 +6,10 @@ import { useTheme } from "@/components/ThemeContext";
 interface SidebarNavigationSlimProps {
   items: (NavItemType & { icon: FC<{ className?: string }> })[];
   footerItems?: (NavItemType & { icon: FC<{ className?: string }> })[];
+  activeIndex?: number;
+  onItemSelect?: (index: number) => void;
+  activeSub?: string | null;
+  onSubSelect?: (label: string) => void;
 }
 
 function formatDate(date: Date): string {
@@ -25,11 +29,27 @@ function formatTime(date: Date): string {
   return `${h}:${m} ${ampm}`;
 }
 
-export function SidebarNavigationSlim({ items, footerItems }: SidebarNavigationSlimProps) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [activeSub, setActiveSub] = useState<string | null>(null);
+export function SidebarNavigationSlim({
+  items,
+  footerItems,
+  activeIndex: propActiveIndex,
+  onItemSelect,
+  activeSub: propActiveSub,
+  onSubSelect,
+}: SidebarNavigationSlimProps) {
+  const [localActiveIndex, setLocalActiveIndex] = useState(0);
+  const [localActiveSub, setLocalActiveSub] = useState<string | null>("Overview");
   const [now, setNow] = useState(new Date());
   const { theme, setTheme } = useTheme();
+
+  const activeIndex = propActiveIndex !== undefined ? propActiveIndex : localActiveIndex;
+  const setActiveIndex = (index: number) => {
+    if (onItemSelect) onItemSelect(index);
+    setLocalActiveIndex(index);
+  };
+
+  const activeSub = propActiveSub !== undefined ? propActiveSub : localActiveSub;
+  const setActiveSub = onSubSelect ?? setLocalActiveSub;
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 30000);
