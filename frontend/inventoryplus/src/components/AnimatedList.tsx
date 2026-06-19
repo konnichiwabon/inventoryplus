@@ -259,10 +259,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   border-radius: 3px;
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .scroll-list::-webkit-scrollbar-thumb {
-                    background: var(--border, #2e303a);
-                  }
+                .dark .scroll-list::-webkit-scrollbar-thumb {
+                  background: var(--border, #2e303a);
                 }
 
                 .scroll-list.no-scrollbar::-webkit-scrollbar {
@@ -291,11 +289,9 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   box-sizing: border-box;
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .item {
-                    background: rgba(255, 255, 255, 0.02);
-                    border-color: rgba(255, 255, 255, 0.05);
-                  }
+                .dark .item {
+                  background: rgba(255, 255, 255, 0.02);
+                  border-color: rgba(255, 255, 255, 0.05);
                 }
 
                 .item:hover {
@@ -305,10 +301,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   box-shadow: 0 4px 12px rgba(170, 59, 255, 0.08);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .item:hover {
-                    box-shadow: 0 4px 12px rgba(192, 132, 252, 0.12);
-                  }
+                .dark .item:hover {
+                  box-shadow: 0 4px 12px rgba(192, 132, 252, 0.12);
                 }
 
                 .item.selected {
@@ -347,11 +341,9 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   background: linear-gradient(to bottom, var(--bg) 0%, transparent 100%);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .vertical .top-gradient,
-                  .grid .top-gradient {
-                    background: linear-gradient(to bottom, #0C111D 0%, transparent 100%);
-                  }
+                .dark .vertical .top-gradient,
+                .dark .grid .top-gradient {
+                  background: linear-gradient(to bottom, #0C111D 0%, transparent 100%);
                 }
 
                 .vertical .bottom-gradient,
@@ -363,11 +355,9 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   background: linear-gradient(to top, var(--bg) 0%, transparent 100%);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .vertical .bottom-gradient,
-                  .grid .bottom-gradient {
-                    background: linear-gradient(to top, #0C111D 0%, transparent 100%);
-                  }
+                .dark .vertical .bottom-gradient,
+                .dark .grid .bottom-gradient {
+                  background: linear-gradient(to top, #0C111D 0%, transparent 100%);
                 }
 
                 .horizontal .top-gradient {
@@ -378,10 +368,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   background: linear-gradient(to right, var(--bg) 0%, transparent 100%);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .horizontal .top-gradient {
-                    background: linear-gradient(to right, #0C111D 0%, transparent 100%);
-                  }
+                .dark .horizontal .top-gradient {
+                  background: linear-gradient(to right, #0C111D 0%, transparent 100%);
                 }
 
                 .horizontal .bottom-gradient {
@@ -392,10 +380,8 @@ const AnimatedList: React.FC<AnimatedListProps> = ({
                   background: linear-gradient(to left, var(--bg) 0%, transparent 100%);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                  .horizontal .bottom-gradient {
-                    background: linear-gradient(to left, #0C111D 0%, transparent 100%);
-                  }
+                .dark .horizontal .bottom-gradient {
+                  background: linear-gradient(to left, #0C111D 0%, transparent 100%);
                 }
             `}</style>
             <div className={`scroll-list-container ${orientation} ${className}`}>

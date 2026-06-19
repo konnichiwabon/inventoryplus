@@ -59,12 +59,14 @@ function App() {
             <button
               onClick={() => {
                 setSelectedDepartment(null);
+                setShowRightSidebar(false);
+                setSelectedMemberIndex(-1);
               }}
               style={{
                 padding: '10px 18px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                color: '#fff',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                backgroundColor: 'var(--code-bg)',
+                color: 'var(--text-h)',
+                border: '1px solid var(--border)',
                 borderRadius: '8px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -72,22 +74,16 @@ function App() {
                 alignSelf: 'flex-start',
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+                e.currentTarget.style.backgroundColor = 'var(--border)';
               }}
               onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+                e.currentTarget.style.backgroundColor = 'var(--code-bg)';
               }}
             >
               ← Back to Departments
             </button>
 
-            <div style={{ color: '#fff' }}>
-              <h2 style={{ fontSize: '2rem', margin: '0 0 8px 0', fontWeight: 700 }}>
-                {selectedDepartment} Team
-              </h2>
-            </div>
+
 
             {!showRightSidebar && (
               <DepartmentPeopleList

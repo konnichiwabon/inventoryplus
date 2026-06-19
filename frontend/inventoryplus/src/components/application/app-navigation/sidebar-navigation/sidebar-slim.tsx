@@ -1,6 +1,7 @@
 import { useState, useEffect, type FC } from "react";
 import type { NavItemType } from "@/components/application/app-navigation/config";
 import "./sidebar-slim.css";
+import { useTheme } from "@/components/ThemeContext";
 
 interface SidebarNavigationSlimProps {
   items: (NavItemType & { icon: FC<{ className?: string }> })[];
@@ -28,6 +29,7 @@ export function SidebarNavigationSlim({ items, footerItems }: SidebarNavigationS
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeSub, setActiveSub] = useState<string | null>(null);
   const [now, setNow] = useState(new Date());
+  const { theme, setTheme } = useTheme();
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 30000);
@@ -159,6 +161,46 @@ export function SidebarNavigationSlim({ items, footerItems }: SidebarNavigationS
               );
             })}
           </nav>
+
+          {/* Theme Selector */}
+          <div className="sb-theme-selector">
+            <div className="sb-theme-title">Theme</div>
+            <div className="sb-theme-options">
+              <button
+                className={`sb-theme-btn ${theme === 'light' ? 'is-active' : ''}`}
+                onClick={() => setTheme('light')}
+                title="Light mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                </svg>
+                <span>Light</span>
+              </button>
+              <button
+                className={`sb-theme-btn ${theme === 'dark' ? 'is-active' : ''}`}
+                onClick={() => setTheme('dark')}
+                title="Dark mode"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                </svg>
+                <span>Dark</span>
+              </button>
+              <button
+                className={`sb-theme-btn ${theme === 'system' ? 'is-active' : ''}`}
+                onClick={() => setTheme('system')}
+                title="System preference"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect width="20" height="14" x="2" y="3" rx="2" />
+                  <line x1="8" x2="16" y1="21" y2="21" />
+                  <line x1="12" x2="12" y1="17" y2="21" />
+                </svg>
+                <span>System</span>
+              </button>
+            </div>
+          </div>
 
           {/* Documents section */}
           <div className="sb-docs">

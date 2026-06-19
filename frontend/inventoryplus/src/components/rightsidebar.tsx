@@ -33,12 +33,10 @@ export default function RightSidebar({ isOpen, title, items, onClose, onItemSele
                     border: 1px solid #EAECF0;
                 }
 
-                @media (prefers-color-scheme: dark) {
-                    .rs-sidebar-container {
-                        background: #0C111D;
-                        border-color: #1F242F;
-                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                    }
+                .dark .rs-sidebar-container {
+                    background: #0C111D;
+                    border-color: #1F242F;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                 }
 
                 /* ── Header ── */
@@ -91,14 +89,12 @@ export default function RightSidebar({ isOpen, title, items, onClose, onItemSele
                     transform: scale(1.08);
                 }
 
-                @media (prefers-color-scheme: dark) {
-                    .rs-close-btn {
-                        background: rgba(255, 255, 255, 0.08);
-                        color: var(--text);
-                    }
-                    .rs-close-btn:hover {
-                        background: rgba(255, 255, 255, 0.15);
-                    }
+                .dark .rs-close-btn {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: var(--text);
+                }
+                .dark .rs-close-btn:hover {
+                    background: rgba(255, 255, 255, 0.15);
                 }
 
                 /* ── List Wrapper ── */
