@@ -9,7 +9,7 @@ export type CardVariant = 'green' | 'orange' | 'blue' | 'beige';
 
 export interface InfoCardProps {
   title: string;
-  icon: React.ReactNode;
+  icon: any;
   variant: CardVariant;
   items: InfoItem[];
   className?: string;

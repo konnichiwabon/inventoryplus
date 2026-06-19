@@ -3,7 +3,7 @@ import ProfileCard from './profileCard';
 import AnimatedCardGrid from './AnimatedCardGrid';
 import DepartmentPeopleList from './departmentPeopleList';
 import RightSidebar from './rightsidebar';
-import InfoCard from '@/components/card';
+import InfoCard from './card';
 
 // Custom Clean SVG Icons
 const MonitorIcon = () => (
