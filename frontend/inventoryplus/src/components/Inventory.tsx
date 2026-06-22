@@ -76,6 +76,142 @@ const cardProps = {
   innerGradient: "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)",
 };
 
+const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
+  if (mName.includes("Sarah Connor")) {
+    return {
+      assets: [
+        { label: "Asset UUID", value: "8f12b3c4-e567-8901-abcd-ef1234567890" },
+        { label: "Asset Tag", value: "AST-9821" },
+        { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
+        { label: "Omada Username", value: "omada_admin" },
+        { label: "OS Version", value: "Ubuntu 24.04 LTS" },
+        { label: "Date Recorded", value: "2026-06-22" }
+      ],
+      motherboard: [
+        { label: "MB Manufacturer", value: "ASUSTeK COMPUTER INC." },
+        { label: "MB Model", value: "ROG STRIX B550-F GAMING" },
+        { label: "MB Serial Number", value: "L8M0KC061920" },
+        { label: "BIOS Serial Number", value: "MB-1234567890" }
+      ],
+      cpu: [
+        { label: "CPU Manufacturer", value: "AMD" },
+        { label: "CPU Model", value: "AMD Ryzen 5 5600X @ 3.70GHz" },
+        { label: "CPU Cores", value: "6" },
+        { label: "CPU Threads", value: "12" }
+      ],
+      ram: [
+        { label: "RAM Capacity", value: "16 GB" },
+        { label: "RAM Speed", value: "3200 MHz" },
+        { label: "RAM Model", value: "Corsair Vengeance LPX" },
+        { label: "RAM Slot Number", value: "DIMM_A2" },
+        { label: "RAM Serial Number", value: "CMK16GX4M2B3200C16" }
+      ],
+      storage: [
+        { label: "Storage Type", value: "SSD (NVMe)" },
+        { label: "Storage Capacity", value: "512 GB" },
+        { label: "Storage Interface", value: "PCIe Gen 4.0" },
+        { label: "Storage Serial Number", value: "S67ENX0R203920" }
+      ],
+      gpu: [
+        { label: "GPU Manufacturer", value: "AMD" },
+        { label: "GPU Model", value: "AMD Radeon RX 6600" },
+        { label: "GPU VRAM", value: "8 GB GDDR6" },
+        { label: "Driver Version", value: "Adrenalin 24.3.1" },
+        { label: "GPU Serial Number", value: "SN-GPU-987654321" }
+      ],
+      network: [
+        { label: "Current IP", value: "192.168.1.105" },
+        { label: "MAC Address", value: "00:11:22:33:44:55" },
+        { label: "DHCP Enabled", value: "true" },
+        { label: "Port Number", value: "22" },
+        { label: "VLAN ID", value: "10" },
+        { label: "Omada Username", value: "net_admin" }
+      ],
+      peripherals: [
+        { label: "Peripheral Type", value: "Keyboard" },
+        { label: "Peripheral Brand", value: "Keychron" },
+        { label: "Peripheral Model", value: "K2 (Bluetooth)" },
+        { label: "Peripheral Serial Number", value: "SN-PER-4819" }
+      ],
+      software: [
+        { label: "Software Name", value: "VS Code" },
+        { label: "Software Version", value: "1.90.1" },
+        { label: "License Type", value: "Open Source" },
+        { label: "License Key", value: "N/A" },
+        { label: "Install Date", value: "2026-06-15" },
+        { label: "Installed By", value: "admin" },
+        { label: "Status", value: "Active" }
+      ]
+    };
+  }
+
+  return {
+    assets: [
+      { label: "Asset UUID", value: "6c23a4b5-d789-0123-bcde-fa3456789012" },
+      { label: "Asset Tag", value: "AST-4412" },
+      { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
+      { label: "Omada Username", value: "omada_admin" },
+      { label: "OS Version", value: "Windows 11 Pro" },
+      { label: "Date Recorded", value: "2026-06-22" }
+    ],
+    motherboard: [
+      { label: "MB Manufacturer", value: "Micro-Star International Co., Ltd." },
+      { label: "MB Model", value: "PRO Z690-A WIFI" },
+      { label: "MB Serial Number", value: "L9M1KC071821" },
+      { label: "BIOS Serial Number", value: "MS-7D25" }
+    ],
+    cpu: [
+      { label: "CPU Manufacturer", value: "Intel" },
+      { label: "CPU Model", value: "Intel Core i7-12700K @ 4.90GHz" },
+      { label: "CPU Cores", value: "12" },
+      { label: "CPU Threads", value: "20" }
+    ],
+    ram: [
+      { label: "RAM Capacity", value: "32 GB" },
+      { label: "RAM Speed", value: "5200 MHz" },
+      { label: "RAM Model", value: "G.Skill Trident Z5" },
+      { label: "RAM Slot Number", value: "DIMM_B2" },
+      { label: "RAM Serial Number", value: "F5-5200J4040A16GX2" }
+    ],
+    storage: [
+      { label: "Storage Type", value: "SSD (NVMe)" },
+      { label: "Storage Capacity", value: "1 TB" },
+      { label: "Storage Interface", value: "PCIe Gen 4.0 x4" },
+      { label: "Storage Serial Number", value: "S67ENX0R203920" }
+    ],
+    gpu: [
+      { label: "GPU Manufacturer", value: "NVIDIA" },
+      { label: "GPU Model", value: "NVIDIA GeForce RTX 3070" },
+      { label: "GPU VRAM", value: "8 GB" },
+      { label: "Driver Version", value: "NVIDIA 550.67" },
+      { label: "GPU Serial Number", value: "SN-GPU-987654321" }
+    ],
+    network: [
+      { label: "Current IP", value: "192.168.1.142" },
+      { label: "MAC Address", value: "e0:d5:5e:a1:b2:c3" },
+      { label: "DHCP Enabled", value: "true" },
+      { label: "Port Number", value: "80" },
+      { label: "VLAN ID", value: "20" },
+      { label: "Omada Username", value: "net_admin" }
+    ],
+    peripherals: [
+      { label: "Peripheral Type", value: "Mouse" },
+      { label: "Peripheral Brand", value: "Logitech" },
+      { label: "Peripheral Model", value: "MX Master 3S" },
+      { label: "Peripheral Serial Number", value: "SN-PER-12345" }
+    ],
+    software: [
+      { label: "Software Name", value: "VS Code" },
+      { label: "Software Version", value: "1.90.1" },
+      { label: "License Type", value: "Open Source" },
+      { label: "License Key", value: "N/A" },
+      { label: "Install Date", value: "2026-06-15" },
+      { label: "Installed By", value: "admin" },
+      { label: "Status", value: "Active" }
+    ]
+  };
+};
+
 interface InventoryProps {
   showRightSidebar: boolean;
   setShowRightSidebar: (show: boolean) => void;
@@ -89,6 +225,20 @@ export default function Inventory({
 }: InventoryProps) {
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(-1);
+  const [workstationSpecs, setWorkstationSpecs] = useState<{ [key: string]: any }>({});
+  const [editingCardTitle, setEditingCardTitle] = useState<string | null>(null);
+  const [editingCardItems, setEditingCardItems] = useState<{ label: string, value: string }[]>([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("inventoryplus_workstation_specs");
+    if (saved) {
+      try {
+        setWorkstationSpecs(JSON.parse(saved));
+      } catch (err) {
+        console.error("Error parsing saved workstation specs:", err);
+      }
+    }
+  }, []);
 
   const [cards, setCards] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -192,6 +342,61 @@ export default function Inventory({
     return `${m.username}${m.email ? ` (${m.email})` : ""}`;
   }) : [];
 
+  const selectedMemberName = selectedDepartment && selectedMemberIndex !== -1 && memberList[selectedMemberIndex]
+    ? memberList[selectedMemberIndex]
+    : "";
+  const selectedMemberCleanName = selectedMemberName ? selectedMemberName.split(' (')[0] : "";
+  const currentMemberKey = selectedDepartment && selectedMemberCleanName
+    ? `${selectedDepartment}-${selectedMemberCleanName}`
+    : "";
+
+  const handleSaveCardEdits = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!currentMemberKey || !editingCardTitle) return;
+
+    let categoryKey = "";
+    if (editingCardTitle === "Asset & OS") categoryKey = "assets";
+    else if (editingCardTitle === "Motherboard") categoryKey = "motherboard";
+    else if (editingCardTitle === "CPU") categoryKey = "cpu";
+    else if (editingCardTitle === "RAM") categoryKey = "ram";
+    else if (editingCardTitle === "Storage") categoryKey = "storage";
+    else if (editingCardTitle === "GPU") categoryKey = "gpu";
+    else if (editingCardTitle === "Network") categoryKey = "network";
+    else if (editingCardTitle === "Peripherals") categoryKey = "peripherals";
+    else if (editingCardTitle === "Software") categoryKey = "software";
+
+    if (!categoryKey) return;
+
+    const saved = localStorage.getItem("inventoryplus_workstation_specs");
+    let currentSpecsDict: any = {};
+    if (saved) {
+      try {
+        currentSpecsDict = JSON.parse(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    const currentMemberSpecs = currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
+
+    const updatedSpecs = {
+      ...currentMemberSpecs,
+      [categoryKey]: editingCardItems.map(item => ({
+        label: item.label,
+        value: item.value
+      }))
+    };
+
+    const newWorkstationSpecs = {
+      ...workstationSpecs,
+      [currentMemberKey]: updatedSpecs
+    };
+
+    setWorkstationSpecs(newWorkstationSpecs);
+    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+    setEditingCardTitle(null);
+  };
+
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {selectedDepartment ? (
@@ -248,102 +453,20 @@ export default function Inventory({
                 {selectedDepartment} Diagnostics
               </h2>
             </div>
-          </div>
-
-          {/* Diagnostic Grid - Only shown when a member is selected */}
+          </div>          {/* Diagnostic Grid - Only shown when a member is selected */}
           {selectedMemberIndex !== -1 && memberList[selectedMemberIndex] && (() => {
             const selectedMemberName = memberList[selectedMemberIndex];
             const name = selectedMemberName.split(' (')[0];
 
-            const getMemberWorkstationSpecs = (mName: string, dept: string) => {
-              if (mName.includes("Sarah Connor")) {
-                return {
-                  system: [
-                    { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
-                    { label: "OS", value: "Ubuntu 24.04 LTS (Noble Numbat)" },
-                    { label: "Kernel", value: "6.8.0-35-generic" },
-                    { label: "Shell", value: "bash 5.2.21" },
-                    { label: "Uptime", value: "4h 32m" }
-                  ],
-                  hardware: [
-                    { label: "CPU", value: "Intel Core i7-12700K (20) @ 4.90GHz" },
-                    { label: "RAM", value: "32.0 GB (16.2 GB used)" },
-                    { label: "Storage", value: "1.0 TB NVMe SSD (42% free)" },
-                    { label: "Architecture", value: "x86_64" },
-                    { label: "Temperature", value: "42°C" }
-                  ],
-                  graphics: [
-                    { label: "GPU", value: "NVIDIA GeForce RTX 3070 (8GB)" },
-                    { label: "Driver", value: "NVIDIA 550.67" },
-                    { label: "Display", value: "2560x1440 @ 144Hz (DP)" },
-                    { label: "OpenGL", value: "4.6.0 NVIDIA" }
-                  ],
-                  network: [
-                    { label: "IP Address", value: "192.168.1.142" },
-                    { label: "Gateway", value: "192.168.1.1" },
-                    { label: "Connection", value: "Ethernet (1000 Mbps)" },
-                    { label: "DNS", value: "8.8.8.8, 1.1.1.1" },
-                    { label: "MAC Address", value: "e0:d5:5e:a1:b2:c3" }
-                  ],
-                  peripherals: [
-                    { label: "Keyboard", value: "Keychron K2 (Bluetooth)" },
-                    { label: "Mouse", value: "Logitech MX Master 3S" },
-                    { label: "IDE", value: "VS Code 1.90.1" },
-                    { label: "Node version", value: "v20.14.0" }
-                  ],
-                  eco: [
-                    { label: "Power State", value: "AC Connected (100%)" },
-                    { label: "Power Plan", value: "Power Saver (Auto)" },
-                    { label: "Screen Timeout", value: "5 minutes" },
-                    { label: "Eco Score", value: <span className="eco-badge">87 / 100</span> }
-                  ]
-                };
-              }
+            const specs = workstationSpecs[currentMemberKey] || getDefaultWorkstationSpecs(name, selectedDepartment || "");
 
-              return {
-                system: [
-                  { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-                  { label: "OS", value: "Windows 11 Pro" },
-                  { label: "Kernel", value: "10.0.22631" },
-                  { label: "Shell", value: "PowerShell 7.4" },
-                  { label: "Uptime", value: "2h 15m" }
-                ],
-                hardware: [
-                  { label: "CPU", value: "AMD Ryzen 5 5600X @ 3.70GHz" },
-                  { label: "RAM", value: "16.0 GB (8.4 GB used)" },
-                  { label: "Storage", value: "512 GB NVMe SSD (50% free)" },
-                  { label: "Architecture", value: "x86_64" },
-                  { label: "Temperature", value: "38°C" }
-                ],
-                graphics: [
-                  { label: "GPU", value: "AMD Radeon RX 6600 (8GB)" },
-                  { label: "Driver", value: "Adrenalin 24.3.1" },
-                  { label: "Display", value: "1920x1080 @ 144Hz (HDMI)" },
-                  { label: "OpenGL", value: "4.6.0" }
-                ],
-                network: [
-                  { label: "IP Address", value: "192.168.1.105" },
-                  { label: "Gateway", value: "192.168.1.1" },
-                  { label: "Connection", value: "Wi-Fi (866 Mbps)" },
-                  { label: "DNS", value: "8.8.8.8" },
-                  { label: "MAC Address", value: "00:11:22:33:44:55" }
-                ],
-                peripherals: [
-                  { label: "Keyboard", value: "Standard Membrane" },
-                  { label: "Mouse", value: "Standard Optical" },
-                  { label: "IDE", value: "VS Code 1.90.1" },
-                  { label: "Node version", value: "v20.14.0" }
-                ],
-                eco: [
-                  { label: "Power State", value: "AC Connected (90%)" },
-                  { label: "Power Plan", value: "Balanced" },
-                  { label: "Screen Timeout", value: "10 minutes" },
-                  { label: "Eco Score", value: <span className="eco-badge">92 / 100</span> }
-                ]
-              };
+            const handleCardClick = (cardTitle: string, currentItems: any[]) => {
+              setEditingCardTitle(cardTitle);
+              setEditingCardItems(currentItems.map(item => ({
+                label: item.label,
+                value: String(item.value || "")
+              })));
             };
-
-            const specs = getMemberWorkstationSpecs(name, selectedDepartment);
 
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -357,45 +480,75 @@ export default function Inventory({
                   width: '100%',
                 }}>
                   <InfoCard
-                    title="System & Identification"
+                    title="Asset & OS"
                     icon={<MonitorIcon />}
                     variant="green"
-                    items={specs.system}
+                    items={specs.assets || []}
+                    onEdit={() => handleCardClick("Asset & OS", specs.assets || [])}
                   />
 
                   <InfoCard
-                    title="Internal Hardware"
+                    title="Motherboard"
                     icon={<CpuIcon />}
                     variant="orange"
-                    items={specs.hardware}
+                    items={specs.motherboard || []}
+                    onEdit={() => handleCardClick("Motherboard", specs.motherboard || [])}
                   />
 
                   <InfoCard
-                    title="Graphics & Display"
+                    title="CPU"
+                    icon={<CpuIcon />}
+                    variant="orange"
+                    items={specs.cpu || []}
+                    onEdit={() => handleCardClick("CPU", specs.cpu || [])}
+                  />
+
+                  <InfoCard
+                    title="RAM"
                     icon={<MonitorIcon />}
                     variant="blue"
-                    items={specs.graphics}
+                    items={specs.ram || []}
+                    onEdit={() => handleCardClick("RAM", specs.ram || [])}
+                  />
+
+                  <InfoCard
+                    title="Storage"
+                    icon={<MonitorIcon />}
+                    variant="blue"
+                    items={specs.storage || []}
+                    onEdit={() => handleCardClick("Storage", specs.storage || [])}
+                  />
+
+                  <InfoCard
+                    title="GPU"
+                    icon={<MonitorIcon />}
+                    variant="blue"
+                    items={specs.gpu || []}
+                    onEdit={() => handleCardClick("GPU", specs.gpu || [])}
                   />
 
                   <InfoCard
                     title="Network"
                     icon={<GlobeIcon />}
                     variant="beige"
-                    items={specs.network}
+                    items={specs.network || []}
+                    onEdit={() => handleCardClick("Network", specs.network || [])}
                   />
 
                   <InfoCard
-                    title="Peripherals & Software"
+                    title="Peripherals"
                     icon={<KeyboardIcon />}
-                    variant="blue"
-                    items={specs.peripherals}
+                    variant="green"
+                    items={specs.peripherals || []}
+                    onEdit={() => handleCardClick("Peripherals", specs.peripherals || [])}
                   />
 
                   <InfoCard
-                    title="Integrated Eco-Features"
-                    icon={<LeafIcon />}
+                    title="Software"
+                    icon={<KeyboardIcon />}
                     variant="green"
-                    items={specs.eco}
+                    items={specs.software || []}
+                    onEdit={() => handleCardClick("Software", specs.software || [])}
                   />
                 </div>
               </div>
@@ -684,6 +837,109 @@ export default function Inventory({
                   onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
                 >
                   Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Specs Modal */}
+      {editingCardTitle !== null && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={() => setEditingCardTitle(null)}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--bg, #fff)",
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              padding: "24px",
+              width: "100%",
+              maxWidth: "450px",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+              margin: "0 16px",
+              maxHeight: "90vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
+              Edit {editingCardTitle} Specs
+            </h3>
+            <form onSubmit={handleSaveCardEdits} style={{ display: "flex", flexDirection: "column", gap: "16px", overflowY: "auto", paddingRight: "4px", flex: 1 }}>
+              {editingCardItems.map((item, idx) => (
+                <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                    {item.label}
+                  </label>
+                  <input
+                    type="text"
+                    value={item.value}
+                    onChange={(e) => {
+                      const updatedItems = [...editingCardItems];
+                      updatedItems[idx].value = e.target.value;
+                      setEditingCardItems(updatedItems);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      backgroundColor: "transparent",
+                      color: "var(--text-h)",
+                      outline: "none",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                </div>
+              ))}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "16px", paddingBottom: "4px" }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingCardTitle(null)}
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "var(--code-bg)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "var(--text-h)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "#7F56D9",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#fff",
+                    cursor: "pointer",
+                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                >
+                  Save Changes
                 </button>
               </div>
             </form>

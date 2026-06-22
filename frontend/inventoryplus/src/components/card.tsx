@@ -13,6 +13,7 @@ export interface InfoCardProps {
   variant: CardVariant;
   items: InfoItem[];
   className?: string;
+  onEdit?: () => void;
 }
 
 const variantStyles = {
@@ -48,19 +49,53 @@ export const InfoCard: React.FC<InfoCardProps> = ({
   variant,
   items,
   className = '',
+  onEdit,
 }) => {
   const styles = variantStyles[variant];
 
   return (
     <div className={`relative bg-[var(--bg)] border border-[var(--border)] rounded-[20px] overflow-hidden shadow-[var(--shadow)] flex flex-col h-full transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_12px_20px_-8px_rgba(0,0,0,0.1),_0_4px_6px_-2px_rgba(0,0,0,0.05)] ${className}`}>
       {/* Header */}
-      <div className={`flex items-center gap-3 px-5 py-4 ${styles.headerBg}`}>
-        <div className={`w-9 h-9 rounded-full flex items-center justify-center shadow-[0_1px_2px_rgba(16,24,40,0.05)] shrink-0 ${styles.iconWrapper}`}>
-          <div className="w-[18px] h-[18px] flex items-center justify-center">
-            {icon}
+      <div className={`flex items-center justify-between gap-3 px-5 py-4 ${styles.headerBg}`}>
+        <div className="flex items-center gap-3">
+          <div className={`w-9 h-9 rounded-full flex items-center justify-center shadow-[0_1px_2px_rgba(16,24,40,0.05)] shrink-0 ${styles.iconWrapper}`}>
+            <div className="w-[18px] h-[18px] flex items-center justify-center">
+              {icon}
+            </div>
           </div>
+          <h3 className={`text-base font-bold m-0 ${styles.titleText}`}>{title}</h3>
         </div>
-        <h3 className={`text-base font-bold m-0 ${styles.titleText}`}>{title}</h3>
+        {onEdit && (
+          <button
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              onEdit();
+            }}
+            className={`flex items-center justify-center p-1.5 rounded-lg border border-transparent transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/10 ${styles.titleText}`}
+            title="Edit specs"
+            style={{
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              style={{ strokeWidth: 2 }}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
+            </svg>
+          </button>
+        )}
       </div>
 
       {/* Content Body */}
