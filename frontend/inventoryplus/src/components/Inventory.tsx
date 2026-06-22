@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProfileCard from './profileCard';
 import AnimatedCardGrid from './AnimatedCardGrid';
 import DepartmentPeopleList from './departmentPeopleList';
@@ -61,7 +61,7 @@ const LeafIcon = () => (
 
 const cardProps = {
   name: "EDDT",
-  title: "EHANCE ARMAMENT",
+
   handle: "javicodes",
   status: "Online",
   contactText: "Contact Me",
@@ -90,16 +90,53 @@ export default function Inventory({
   const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(-1);
 
-  const [cards, setCards] = useState([
-    { id: 1, ...cardProps, name: "Engineering" },
-    { id: 2, ...cardProps, name: "Marketing" },
-    { id: 3, ...cardProps, name: "Finance" },
-    { id: 4, ...cardProps, name: "Sales" },
-    { id: 5, ...cardProps, name: "Sheesh" },
-  ]);
+  const [cards, setCards] = useState<any[]>([]);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [newDeptName, setNewDeptName] = useState("");
+
+  const fetchDepartments = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/departments/");
+      if (res.ok) {
+        const data = await res.json();
+        const loadedCards = data.map((dept: any) => ({
+          id: dept.id,
+          ...cardProps,
+          name: dept.name,
+        }));
+        setCards(loadedCards);
+      }
+    } catch (err) {
+      console.error("Error fetching departments:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchDepartments();
+  }, []);
 
   const handleAddCard = () => {
-    setCards([...cards, { id: Date.now(), ...cardProps, name: `Department ${cards.length + 1}` }]);
+    setShowAddModal(true);
+  };
+
+  const handleAddCardSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newDeptName.trim()) return;
+
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/departments/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: newDeptName.trim() }),
+      });
+      if (res.ok) {
+        setNewDeptName("");
+        setShowAddModal(false);
+        fetchDepartments();
+      }
+    } catch (err) {
+      console.error("Error adding department:", err);
+    }
   };
 
   const memberList = selectedDepartment ? [
@@ -366,6 +403,105 @@ export default function Inventory({
           setSelectedMemberIndex(index);
         }}
       />
+
+      {/* Add Department Modal */}
+      {showAddModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={() => setShowAddModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--bg, #fff)",
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              padding: "24px",
+              width: "100%",
+              maxWidth: "400px",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+              margin: "0 16px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
+              Add Department Card
+            </h3>
+            <form onSubmit={handleAddCardSubmit}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
+                  Department Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Engineering, Marketing, Finance"
+                  value={newDeptName}
+                  onChange={(e) => setNewDeptName(e.target.value)}
+                  autoFocus
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-h)",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setNewDeptName("");
+                  }}
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "var(--code-bg)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "var(--text-h)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "#7F56D9",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#fff",
+                    cursor: "pointer",
+                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

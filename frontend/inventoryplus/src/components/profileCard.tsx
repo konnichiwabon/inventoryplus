@@ -36,6 +36,39 @@ const round = (v: number, precision = 3): number => parseFloat(v.toFixed(precisi
 const adjust = (v: number, fMin: number, fMax: number, tMin: number, tMax: number): number =>
   round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
 
+const getDepartmentIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('eng') || n.includes('dev') || n.includes('tech') || n.includes('code')) {
+    return (
+      <svg className="w-12 h-12 text-[#A78BFA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(167, 139, 250, 0.5))' }}>
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+      </svg>
+    );
+  }
+  if (n.includes('mark') || n.includes('sale') || n.includes('prom') || n.includes('ads')) {
+    return (
+      <svg className="w-12 h-12 text-[#F43F5E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(244, 63, 94, 0.5))' }}>
+        <path d="M23 6l-9.5 9.5-5-5L1 18"></path>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+    );
+  }
+  if (n.includes('fin') || n.includes('pay') || n.includes('bill') || n.includes('mon')) {
+    return (
+      <svg className="w-12 h-12 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))' }}>
+        <line x1="12" y1="1" x2="12" y2="23"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+    );
+  }
+  return (
+    <svg className="w-12 h-12 text-[#3B82F6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))' }}>
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+    </svg>
+  );
+};
+
 // Inject keyframes once
 const KEYFRAMES_ID = 'pc-keyframes';
 if (typeof document !== 'undefined' && !document.getElementById(KEYFRAMES_ID)) {
@@ -607,57 +640,105 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             </div>
 
             {/* Details content */}
-            <div
-              className="max-h-full overflow-hidden text-center relative z-[5]"
-              style={{
-                transform:
-                  'translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px)',
-                mixBlendMode: 'luminosity',
-                gridArea: '1 / -1',
-                borderRadius: cardRadius,
-                pointerEvents: 'none'
-              }}
-            >
-              <div className="w-full absolute flex flex-col" style={{ top: '3em', display: 'flex', gridArea: 'auto' }}>
-                <h3
-                  className="font-semibold m-0"
-                  style={{
-                    fontSize: 'min(5svh, 3em)',
-                    backgroundImage: 'linear-gradient(to bottom, #fff, #6f6fbe)',
-                    backgroundSize: '1em 1.5em',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    display: 'block',
-                    gridArea: 'auto',
-                    borderRadius: '0',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  {name}
-                </h3>
-                <p
-                  className="font-semibold whitespace-nowrap mx-auto w-min"
-                  style={{
-                    position: 'relative',
-                    top: '-12px',
-                    fontSize: '16px',
-                    margin: '0 auto',
-                    backgroundImage: 'linear-gradient(to bottom, #fff, #4a4ac0)',
-                    backgroundSize: '1em 1.5em',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    display: 'block',
-                    gridArea: 'auto',
-                    borderRadius: '0',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  {title}
-                </p>
+            {!showUserInfo ? (
+              <div
+                className="absolute inset-0 flex flex-col justify-between p-6 text-left z-[5]"
+                style={{
+                  transform:
+                    'translate3d(calc(var(--pointer-from-left) * -10px + 5px), calc(var(--pointer-from-top) * -10px + 5px), 2px)',
+                  borderRadius: cardRadius,
+                  pointerEvents: 'none'
+                }}
+              >
+                {/* Top Section: Department Indicator */}
+                <div className="flex justify-between items-center w-full">
+                  <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                    Department
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-emerald-400 font-medium tracking-wide">Connected</span>
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                  </div>
+                </div>
+
+                {/* Middle Section: Modern Neon Icon & Name */}
+                <div className="flex flex-col items-center justify-center my-auto gap-4 w-full">
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                    {getDepartmentIcon(name || "")}
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-2xl font-bold tracking-tight text-white drop-shadow-md">
+                      {name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Bottom Section: Translucent Stats Badge */}
+                <div className="w-full bg-black/40 border border-white/5 rounded-xl p-3.5 backdrop-blur-md flex items-center justify-around text-center">
+                  <div>
+                    <div className="text-lg font-bold text-white tracking-tight">7</div>
+                    <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Members</div>
+                  </div>
+                  <div className="w-px h-8 bg-white/10" />
+                  <div>
+                    <div className="text-lg font-bold text-purple-400 tracking-tight">12</div>
+                    <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Devices</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div
+                className="max-h-full overflow-hidden text-center relative z-[5]"
+                style={{
+                  transform:
+                    'translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px)',
+                  mixBlendMode: 'luminosity',
+                  gridArea: '1 / -1',
+                  borderRadius: cardRadius,
+                  pointerEvents: 'none'
+                }}
+              >
+                <div className="w-full absolute flex flex-col" style={{ top: '3em', display: 'flex', gridArea: 'auto' }}>
+                  <h3
+                    className="font-semibold m-0"
+                    style={{
+                      fontSize: 'min(5svh, 3em)',
+                      backgroundImage: 'linear-gradient(to bottom, #fff, #6f6fbe)',
+                      backgroundSize: '1em 1.5em',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      display: 'block',
+                      gridArea: 'auto',
+                      borderRadius: '0',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    {name}
+                  </h3>
+                  <p
+                    className="font-semibold whitespace-nowrap mx-auto w-min"
+                    style={{
+                      position: 'relative',
+                      top: '-12px',
+                      fontSize: '16px',
+                      margin: '0 auto',
+                      backgroundImage: 'linear-gradient(to bottom, #fff, #4a4ac0)',
+                      backgroundSize: '1em 1.5em',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      display: 'block',
+                      gridArea: 'auto',
+                      borderRadius: '0',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    {title}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </div>
