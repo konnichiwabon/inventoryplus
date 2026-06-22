@@ -139,15 +139,58 @@ export default function Inventory({
     }
   };
 
-  const memberList = selectedDepartment ? [
-    `Sarah Connor (${selectedDepartment} Lead)`,
-    `John Doe (Senior Developer)`,
-    `Jane Smith (UX Designer)`,
-    `Alex Rivera (Product Manager)`,
-    `Emma Watson (QA Engineer)`,
-    `Emperor (Big Boss)`,
-    `Eyyy(Sheesh)`
-  ] : [];
+  const [members, setMembers] = useState<any[]>([]);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberEmail, setNewMemberEmail] = useState("");
+
+  const fetchMembers = async (deptName: string) => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/departments/${encodeURIComponent(deptName)}/users/`);
+      if (res.ok) {
+        const data = await res.json();
+        setMembers(data);
+      }
+    } catch (err) {
+      console.error("Error fetching department users:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedDepartment) {
+      fetchMembers(selectedDepartment);
+    } else {
+      setMembers([]);
+    }
+  }, [selectedDepartment]);
+
+  const handleAddMemberSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMemberName.trim() || !selectedDepartment) return;
+
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: newMemberName.trim(),
+          email: newMemberEmail.trim() || null,
+        }),
+      });
+      if (res.ok) {
+        setNewMemberName("");
+        setNewMemberEmail("");
+        setShowAddMemberModal(false);
+        fetchMembers(selectedDepartment);
+      }
+    } catch (err) {
+      console.error("Error adding team member:", err);
+    }
+  };
+
+  const memberList = selectedDepartment ? members.map(m => {
+    return `${m.username}${m.email ? ` (${m.email})` : ""}`;
+  }) : [];
 
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -180,9 +223,31 @@ export default function Inventory({
             >
               ← Back to Departments
             </button>
-            <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 800, color: 'var(--text-h)' }}>
-              {selectedDepartment} Diagnostics
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              {selectedMemberIndex === -1 && (
+                <button
+                  onClick={() => setShowAddMemberModal(true)}
+                  style={{
+                    padding: '10px 16px',
+                    backgroundColor: '#7F56D9',
+                    color: '#fff',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 2px rgba(16, 24, 40, 0.05)',
+                    transition: 'background-color 0.2s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                >
+                  + Add Member
+                </button>
+              )}
+              <h2 style={{ margin: 0, fontSize: '24px', fontWeight: 800, color: 'var(--text-h)' }}>
+                {selectedDepartment} Diagnostics
+              </h2>
+            </div>
           </div>
 
           {/* Diagnostic Grid - Only shown when a member is selected */}
@@ -465,6 +530,129 @@ export default function Inventory({
                   onClick={() => {
                     setShowAddModal(false);
                     setNewDeptName("");
+                  }}
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "var(--code-bg)",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "var(--text-h)",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "10px 16px",
+                    backgroundColor: "#7F56D9",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    fontWeight: 600,
+                    color: "#fff",
+                    cursor: "pointer",
+                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Add Member Modal */}
+      {showAddMemberModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 1000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            backdropFilter: "blur(4px)",
+          }}
+          onClick={() => setShowAddMemberModal(false)}
+        >
+          <div
+            style={{
+              backgroundColor: "var(--bg, #fff)",
+              border: "1px solid var(--border)",
+              borderRadius: "16px",
+              padding: "24px",
+              width: "100%",
+              maxWidth: "400px",
+              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
+              margin: "0 16px",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
+              Add Team Member
+            </h3>
+            <form onSubmit={handleAddMemberSubmit}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
+                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
+                  Name
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. John Doe"
+                  value={newMemberName}
+                  onChange={(e) => setNewMemberName(e.target.value)}
+                  autoFocus
+                  required
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-h)",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
+                  Email (Optional)
+                </label>
+                <input
+                  type="email"
+                  placeholder="e.g. john@example.com"
+                  value={newMemberEmail}
+                  onChange={(e) => setNewMemberEmail(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: "10px 12px",
+                    border: "1px solid var(--border)",
+                    borderRadius: "8px",
+                    fontSize: "14px",
+                    backgroundColor: "transparent",
+                    color: "var(--text-h)",
+                    outline: "none",
+                    boxSizing: "border-box",
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowAddMemberModal(false);
+                    setNewMemberName("");
+                    setNewMemberEmail("");
                   }}
                   style={{
                     padding: "10px 16px",

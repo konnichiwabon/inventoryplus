@@ -15,6 +15,7 @@ class Department(models.Model):
 class UserProfile(models.Model):
     user_id = models.AutoField(primary_key=True)
     username = models.CharField(max_length=255, null=True, blank=True)
+    email = models.CharField(max_length=255, null=True, blank=True)
     department = models.ForeignKey(
         Department,
         on_delete=models.SET_NULL,

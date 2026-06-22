@@ -44,6 +44,7 @@ def department_users_list(request, dept_name):
             data.append({
                 'id': u.user_id,
                 'username': u.username,
+                'email': u.email,
             })
         return JsonResponse(data, safe=False)
 
@@ -51,16 +52,19 @@ def department_users_list(request, dept_name):
         try:
             body = json.loads(request.body)
             username = body.get('username')
+            email = body.get('email')
             if not username:
                 return JsonResponse({'error': 'Username is required'}, status=400)
 
             user = UserProfile.objects.create(
                 username=username,
+                email=email,
                 department=dept
             )
             return JsonResponse({
                 'id': user.user_id,
-                'username': user.username
+                'username': user.username,
+                'email': user.email
             }, status=201)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
