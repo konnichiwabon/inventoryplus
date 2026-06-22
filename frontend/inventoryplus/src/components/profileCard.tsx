@@ -19,7 +19,8 @@
 
 
 
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
+import { useTheme } from './ThemeContext';
 
 const DEFAULT_INNER_GRADIENT = 'linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)';
 
@@ -137,6 +138,25 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   onContactClick,
   onCardClick
 }) => {
+  const { theme } = useTheme();
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      if (theme === 'system') {
+        setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      } else {
+        setIsDark(theme === 'dark');
+      }
+    };
+    checkTheme();
+    if (theme === 'system') {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', checkTheme);
+      return () => media.removeEventListener('change', checkTheme);
+    }
+  }, [theme]);
+
   const wrapRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -398,8 +418,12 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     () => ({
       '--icon': iconUrl ? `url(${iconUrl})` : 'none',
       '--grain': grainUrl ? `url(${grainUrl})` : 'none',
-      '--inner-gradient': innerGradient ?? DEFAULT_INNER_GRADIENT,
-      '--behind-glow-color': behindGlowColor ?? 'rgba(125, 190, 255, 0.67)',
+      '--inner-gradient': isDark 
+        ? (innerGradient ?? DEFAULT_INNER_GRADIENT)
+        : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(220, 235, 255, 0.75) 100%)',
+      '--behind-glow-color': isDark
+        ? (behindGlowColor ?? 'rgba(125, 190, 255, 0.67)')
+        : 'rgba(59, 130, 246, 0.15)',
       '--behind-glow-size': behindGlowSize ?? '50%',
       '--pointer-x': '50%',
       '--pointer-y': '50%',
@@ -425,7 +449,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       '--sunpillar-clr-5': 'var(--sunpillar-5)',
       '--sunpillar-clr-6': 'var(--sunpillar-6)'
     }),
-    [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize, cardRadius]
+    [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize, cardRadius, isDark]
   );
 
   const handleContactClick = useCallback((e: React.MouseEvent): void => {
@@ -524,11 +548,12 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             aspectRatio: '0.718',
             borderRadius: cardRadius,
             backgroundBlendMode: 'color-dodge, normal, normal, normal',
-            boxShadow:
-              'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px',
+            boxShadow: isDark
+              ? 'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px'
+              : 'rgba(0, 0, 0, 0.08) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px, 0 4px 6px -1px rgba(0, 0, 0, 0.05)',
             transition: 'transform 1s ease, height 0.4s ease, width 0.4s ease, max-height 0.4s ease',
             transform: 'translateZ(0) rotateX(0deg) rotateY(0deg)',
-            background: 'rgba(0, 0, 0, 0.9)',
+            background: isDark ? 'rgba(10, 20, 16, 0.4)' : 'rgba(255, 255, 255, 0.55)',
             backfaceVisibility: 'hidden'
           }}
           onMouseEnter={e => {
@@ -546,14 +571,14 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             className="absolute inset-0"
             style={{
               backgroundImage: 'var(--inner-gradient)',
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.95)',
               borderRadius: cardRadius,
               display: 'grid',
               gridArea: '1 / -1'
             }}
           >
             {/* Shine layer */}
-            <div style={shineStyle} />
+            {isDark && <div style={shineStyle} />}
 
             {/* Glare layer */}
             <div style={glareStyle} />
@@ -652,37 +677,37 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
               >
                 {/* Top Section: Department Indicator */}
                 <div className="flex justify-between items-center w-full">
-                  <span className="text-[10px] font-bold tracking-wider text-purple-300 uppercase bg-purple-500/10 border border-purple-500/20 px-2.5 py-1 rounded-full backdrop-blur-sm">
+                  <span className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full backdrop-blur-sm transition-colors duration-300 ${isDark ? 'text-purple-300 bg-purple-500/10 border border-purple-500/20' : 'text-purple-700 bg-purple-50 border border-purple-200'}`}>
                     Department
                   </span>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[10px] text-emerald-400 font-medium tracking-wide">Connected</span>
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
+                    <span className={`text-[10px] font-semibold tracking-wide transition-colors duration-300 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Connected</span>
+                    <div className={`w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse transition-all duration-300 ${isDark ? 'shadow-[0_0_8px_#34d399]' : 'shadow-[0_0_6px_#059669]'}`} />
                   </div>
                 </div>
 
                 {/* Middle Section: Modern Neon Icon & Name */}
                 <div className="flex flex-col items-center justify-center my-auto gap-4 w-full">
-                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-md shadow-2xl transition-transform duration-300 group-hover:scale-110">
+                  <div className={`p-4 rounded-2xl border transition-all duration-300 group-hover:scale-110 ${isDark ? 'bg-white/[0.03] border-white/10 backdrop-blur-md shadow-2xl' : 'bg-black/[0.02] border-black/5 shadow-inner'}`}>
                     {getDepartmentIcon(name || "")}
                   </div>
                   <div className="text-center">
-                    <h3 className="text-2xl font-bold tracking-tight text-white drop-shadow-md">
+                    <h3 className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-white drop-shadow-md' : 'text-slate-800'}`}>
                       {name}
                     </h3>
                   </div>
                 </div>
 
                 {/* Bottom Section: Translucent Stats Badge */}
-                <div className="w-full bg-black/40 border border-white/5 rounded-xl p-3.5 backdrop-blur-md flex items-center justify-around text-center">
+                <div className={`w-full border rounded-xl p-3.5 backdrop-blur-md flex items-center justify-around text-center transition-colors duration-300 ${isDark ? 'bg-black/40 border-white/5' : 'bg-white/70 border-black/5 shadow-sm'}`}>
                   <div>
-                    <div className="text-lg font-bold text-white tracking-tight">7</div>
-                    <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Members</div>
+                    <div className={`text-lg font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-white' : 'text-slate-800'}`}>7</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Members</div>
                   </div>
-                  <div className="w-px h-8 bg-white/10" />
+                  <div className={`w-px h-8 transition-colors duration-300 ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
                   <div>
-                    <div className="text-lg font-bold text-purple-400 tracking-tight">12</div>
-                    <div className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Devices</div>
+                    <div className={`text-lg font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>12</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Devices</div>
                   </div>
                 </div>
               </div>
