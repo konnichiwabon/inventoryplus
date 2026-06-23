@@ -268,6 +268,77 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
   };
 };
 
+const CARD_TEMPLATES: Record<string, any> = {
+  "Operating System": [
+    [
+      { label: "OS Name", value: "" },
+      { label: "OS Version", value: "" },
+      { label: "OS Architecture", value: "" },
+      { label: "Partition", value: "" }
+    ]
+  ],
+  "Motherboard": [
+    { label: "MB Manufacturer", value: "" },
+    { label: "MB Model", value: "" },
+    { label: "MB Serial Number", value: "" },
+    { label: "BIOS Serial Number", value: "" }
+  ],
+  "CPU": [
+    { label: "CPU Manufacturer", value: "" },
+    { label: "CPU Model", value: "" },
+    { label: "CPU Cores", value: "" },
+    { label: "CPU Threads", value: "" }
+  ],
+  "RAM": [
+    [
+      { label: "RAM Capacity", value: "" },
+      { label: "RAM Speed", value: "" },
+      { label: "RAM Model", value: "" },
+      { label: "RAM Slot Number", value: "" },
+      { label: "RAM Serial Number", value: "" }
+    ]
+  ],
+  "Storage": [
+    [
+      { label: "Storage Capacity", value: "" },
+      { label: "Storage Type", value: "" },
+      { label: "Storage Interface", value: "" },
+      { label: "Storage Serial Number", value: "" }
+    ]
+  ],
+  "GPU": [
+    { label: "GPU Manufacturer", value: "" },
+    { label: "GPU Model", value: "" },
+    { label: "GPU VRAM", value: "" },
+    { label: "Driver Version", value: "" },
+    { label: "GPU Serial Number", value: "" }
+  ],
+  "Monitor": [
+    [
+      { label: "Monitor Brand", value: "" },
+      { label: "Monitor Model", value: "" },
+      { label: "Monitor Resolution", value: "" },
+      { label: "Monitor Serial Number", value: "" }
+    ]
+  ],
+  "Network": [
+    { label: "Current IP", value: "" },
+    { label: "MAC Address", value: "" },
+    { label: "DHCP Enabled", value: "" },
+    { label: "Port Number", value: "" },
+    { label: "VLAN ID", value: "" },
+    { label: "Omada Username", value: "" }
+  ],
+  "Peripherals": [
+    [
+      { label: "Peripheral Type", value: "" },
+      { label: "Peripheral Brand", value: "" },
+      { label: "Peripheral Model", value: "" },
+      { label: "Peripheral Serial Number", value: "" }
+    ]
+  ]
+};
+
 interface InventoryProps {
   showRightSidebar: boolean;
   setShowRightSidebar: (show: boolean) => void;
@@ -463,6 +534,86 @@ export default function Inventory({
     setEditingCardTitle(null);
   };
 
+  const handleAddSpecCard = (cardTitle: string, currentSpecs: any) => {
+    let categoryKey = "";
+    if (cardTitle === "Asset Details") categoryKey = "assets";
+    else if (cardTitle === "Operating System") categoryKey = "os";
+    else if (cardTitle === "Motherboard") categoryKey = "motherboard";
+    else if (cardTitle === "CPU") categoryKey = "cpu";
+    else if (cardTitle === "RAM") categoryKey = "ram";
+    else if (cardTitle === "Storage") categoryKey = "storage";
+    else if (cardTitle === "GPU") categoryKey = "gpu";
+    else if (cardTitle === "Network") categoryKey = "network";
+    else if (cardTitle === "Peripherals") categoryKey = "peripherals";
+    else if (cardTitle === "Monitor") categoryKey = "monitor";
+
+    if (!categoryKey) return;
+
+    const template = CARD_TEMPLATES[cardTitle] || [];
+
+    const updatedSpecs = {
+      ...currentSpecs,
+      [categoryKey]: template
+    };
+
+    const newWorkstationSpecs = {
+      ...workstationSpecs,
+      [currentMemberKey]: updatedSpecs
+    };
+
+    setWorkstationSpecs(newWorkstationSpecs);
+    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+
+    setEditingCardTitle(cardTitle);
+    setEditingCardItems(JSON.parse(JSON.stringify(template)));
+  };
+
+  const handleDeleteCard = (cardTitle: string) => {
+    if (!window.confirm(`Are you sure you want to delete all specs for ${cardTitle}?`)) {
+      return;
+    }
+
+    let categoryKey = "";
+    if (cardTitle === "Asset Details") categoryKey = "assets";
+    else if (cardTitle === "Operating System") categoryKey = "os";
+    else if (cardTitle === "Motherboard") categoryKey = "motherboard";
+    else if (cardTitle === "CPU") categoryKey = "cpu";
+    else if (cardTitle === "RAM") categoryKey = "ram";
+    else if (cardTitle === "Storage") categoryKey = "storage";
+    else if (cardTitle === "GPU") categoryKey = "gpu";
+    else if (cardTitle === "Network") categoryKey = "network";
+    else if (cardTitle === "Peripherals") categoryKey = "peripherals";
+    else if (cardTitle === "Monitor") categoryKey = "monitor";
+
+    if (!categoryKey) return;
+
+    const saved = localStorage.getItem("inventoryplus_workstation_specs");
+    let currentSpecsDict: Record<string, any> = {};
+    if (saved) {
+      try {
+        currentSpecsDict = JSON.parse(saved);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    const currentMemberSpecs = currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
+
+    const updatedSpecs = {
+      ...currentMemberSpecs,
+      [categoryKey]: []
+    };
+
+    const newWorkstationSpecs = {
+      ...workstationSpecs,
+      [currentMemberKey]: updatedSpecs
+    };
+
+    setWorkstationSpecs(newWorkstationSpecs);
+    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+    setEditingCardTitle(null);
+  };
+
   return (
     <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {selectedDepartment ? (
@@ -542,11 +693,55 @@ export default function Inventory({
               }));
             };
 
+            const ALL_CATEGORIES = [
+              { title: "Operating System", key: "os" },
+              { title: "Motherboard", key: "motherboard" },
+              { title: "CPU", key: "cpu" },
+              { title: "RAM", key: "ram" },
+              { title: "Storage", key: "storage" },
+              { title: "GPU", key: "gpu" },
+              { title: "Monitor", key: "monitor" },
+              { title: "Network", key: "network" },
+              { title: "Peripherals", key: "peripherals" }
+            ];
+
+            const hiddenCategories = ALL_CATEGORIES.filter(cat => !specs[cat.key] || specs[cat.key].length === 0);
+
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-h)', margin: 0 }}>
-                  {name}'s Workstation Diagnostics
-                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-h)', margin: 0 }}>
+                    {name}'s Workstation Diagnostics
+                  </h3>
+                  {hiddenCategories.length > 0 && (
+                    <select
+                      onChange={(e) => {
+                        const selectedTitle = e.target.value;
+                        if (!selectedTitle) return;
+                        handleAddSpecCard(selectedTitle, specs);
+                        e.target.value = "";
+                      }}
+                      style={{
+                        padding: "8px 12px",
+                        borderRadius: "8px",
+                        border: "1px solid var(--border)",
+                        backgroundColor: "var(--code-bg)",
+                        color: "var(--text-h)",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        outline: "none"
+                      }}
+                    >
+                      <option value="">+ Add Hardware Specification...</option>
+                      {hiddenCategories.map(cat => (
+                        <option key={cat.key} value={cat.title}>
+                          {cat.title}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                </div>
                 <div style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
@@ -561,77 +756,95 @@ export default function Inventory({
                     onEdit={() => handleCardClick("Asset Details", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
                   />
 
-                  <InfoCard
-                    title="Operating System"
-                    icon={<GlobeIcon />}
-                    variant="green"
-                    items={normalizeSpecCategory(specs.os)}
-                    onEdit={() => handleCardClick("Operating System", normalizeSpecCategory(specs.os))}
-                  />
+                  {specs.os && specs.os.length > 0 && (
+                    <InfoCard
+                      title="Operating System"
+                      icon={<GlobeIcon />}
+                      variant="green"
+                      items={normalizeSpecCategory(specs.os)}
+                      onEdit={() => handleCardClick("Operating System", normalizeSpecCategory(specs.os))}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="Motherboard"
-                    icon={<CpuIcon />}
-                    variant="orange"
-                    items={specs.motherboard || []}
-                    onEdit={() => handleCardClick("Motherboard", specs.motherboard || [])}
-                  />
+                  {specs.motherboard && specs.motherboard.length > 0 && (
+                    <InfoCard
+                      title="Motherboard"
+                      icon={<CpuIcon />}
+                      variant="orange"
+                      items={specs.motherboard}
+                      onEdit={() => handleCardClick("Motherboard", specs.motherboard)}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="CPU"
-                    icon={<CpuIcon />}
-                    variant="orange"
-                    items={specs.cpu || []}
-                    onEdit={() => handleCardClick("CPU", specs.cpu || [])}
-                  />
+                  {specs.cpu && specs.cpu.length > 0 && (
+                    <InfoCard
+                      title="CPU"
+                      icon={<CpuIcon />}
+                      variant="orange"
+                      items={specs.cpu}
+                      onEdit={() => handleCardClick("CPU", specs.cpu)}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="RAM"
-                    icon={<MonitorIcon />}
-                    variant="blue"
-                    items={normalizeSpecCategory(specs.ram)}
-                    onEdit={() => handleCardClick("RAM", normalizeSpecCategory(specs.ram))}
-                  />
+                  {specs.ram && specs.ram.length > 0 && (
+                    <InfoCard
+                      title="RAM"
+                      icon={<MonitorIcon />}
+                      variant="blue"
+                      items={normalizeSpecCategory(specs.ram)}
+                      onEdit={() => handleCardClick("RAM", normalizeSpecCategory(specs.ram))}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="Storage"
-                    icon={<MonitorIcon />}
-                    variant="blue"
-                    items={normalizeSpecCategory(specs.storage)}
-                    onEdit={() => handleCardClick("Storage", normalizeSpecCategory(specs.storage))}
-                  />
+                  {specs.storage && specs.storage.length > 0 && (
+                    <InfoCard
+                      title="Storage"
+                      icon={<MonitorIcon />}
+                      variant="blue"
+                      items={normalizeSpecCategory(specs.storage)}
+                      onEdit={() => handleCardClick("Storage", normalizeSpecCategory(specs.storage))}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="GPU"
-                    icon={<MonitorIcon />}
-                    variant="blue"
-                    items={specs.gpu || []}
-                    onEdit={() => handleCardClick("GPU", specs.gpu || [])}
-                  />
+                  {specs.gpu && specs.gpu.length > 0 && (
+                    <InfoCard
+                      title="GPU"
+                      icon={<MonitorIcon />}
+                      variant="blue"
+                      items={specs.gpu}
+                      onEdit={() => handleCardClick("GPU", specs.gpu)}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="Monitor"
-                    icon={<MonitorIcon />}
-                    variant="blue"
-                    items={normalizeSpecCategory(specs.monitor)}
-                    onEdit={() => handleCardClick("Monitor", normalizeSpecCategory(specs.monitor))}
-                  />
+                  {specs.monitor && specs.monitor.length > 0 && (
+                    <InfoCard
+                      title="Monitor"
+                      icon={<MonitorIcon />}
+                      variant="blue"
+                      items={normalizeSpecCategory(specs.monitor)}
+                      onEdit={() => handleCardClick("Monitor", normalizeSpecCategory(specs.monitor))}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="Network"
-                    icon={<GlobeIcon />}
-                    variant="beige"
-                    items={specs.network || []}
-                    onEdit={() => handleCardClick("Network", specs.network || [])}
-                  />
+                  {specs.network && specs.network.length > 0 && (
+                    <InfoCard
+                      title="Network"
+                      icon={<GlobeIcon />}
+                      variant="beige"
+                      items={specs.network}
+                      onEdit={() => handleCardClick("Network", specs.network)}
+                    />
+                  )}
 
-                  <InfoCard
-                    title="Peripherals"
-                    icon={<KeyboardIcon />}
-                    variant="green"
-                    items={normalizeSpecCategory(specs.peripherals)}
-                    onEdit={() => handleCardClick("Peripherals", normalizeSpecCategory(specs.peripherals))}
-                  />
+                  {specs.peripherals && specs.peripherals.length > 0 && (
+                    <InfoCard
+                      title="Peripherals"
+                      icon={<KeyboardIcon />}
+                      variant="green"
+                      items={normalizeSpecCategory(specs.peripherals)}
+                      onEdit={() => handleCardClick("Peripherals", normalizeSpecCategory(specs.peripherals))}
+                    />
+                  )}
                 </div>
               </div>
             );
@@ -1112,23 +1325,49 @@ export default function Inventory({
                   </div>
                 ));
               })()}
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "16px", paddingBottom: "4px" }}>
-                <button
-                  type="button"
-                  onClick={() => setEditingCardTitle(null)}
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "var(--code-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "var(--text-h)",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancel
-                </button>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px", paddingBottom: "4px" }}>
+                {editingCardTitle !== "Asset Details" ? (
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteCard(editingCardTitle!)}
+                    style={{
+                      padding: "10px 16px",
+                      backgroundColor: "transparent",
+                      border: "1px solid #FDA29B",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "#F04438",
+                      cursor: "pointer",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.backgroundColor = "#FEF3F2";
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                    }}
+                  >
+                    Delete Card
+                  </button>
+                ) : <div />}
+                <div style={{ display: "flex", gap: "12px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingCardTitle(null)}
+                    style={{
+                      padding: "10px 16px",
+                      backgroundColor: "var(--code-bg)",
+                      border: "1px solid var(--border)",
+                      borderRadius: "8px",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      color: "var(--text-h)",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Cancel
+                  </button>
                 <button
                   type="submit"
                   style={{
@@ -1147,6 +1386,7 @@ export default function Inventory({
                 >
                   Save Changes
                 </button>
+                </div>
               </div>
             </form>
           </div>
