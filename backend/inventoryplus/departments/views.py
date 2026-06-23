@@ -205,17 +205,27 @@ def user_workstation_specs(request, user_id):
                         return item.get("value", "")
                 return ""
 
-            assets_list = body.get("assets", [])
-            if not assets_list:
+            # Check if everything is empty (representing a full deletion of specs)
+            all_keys = ["assets", "os", "motherboard", "cpu", "ram", "storage", "gpu", "monitor", "network", "peripherals"]
+            has_data = False
+            for k in all_keys:
+                if body.get(k):
+                    has_data = True
+                    break
+
+            if not has_data:
                 # Delete the asset and all cascaded specs
                 user.assets.all().delete()
                 return JsonResponse({"status": "deleted"})
 
-            asset_tag = get_val(assets_list, "Asset Tag")
-            hostname = get_val(assets_list, "Hostname")
-            date_recorded_str = get_val(assets_list, "Date Recorded")
-
+            # Ensure the asset object exists in the database
             asset = user.assets.first()
+            
+            assets_list = body.get("assets", [])
+            asset_tag = get_val(assets_list, "Asset Tag") if assets_list else ""
+            hostname = get_val(assets_list, "Hostname") if assets_list else ""
+            date_recorded_str = get_val(assets_list, "Date Recorded") if assets_list else ""
+
             if not asset:
                 if not asset_tag:
                     asset_tag = f"AST-{user.user_id}"
@@ -228,23 +238,32 @@ def user_workstation_specs(request, user_id):
 
                 asset = Asset.objects.create(
                     asset_tag=asset_tag,
-                    hostname=hostname,
+                    hostname=hostname or None,
                     user=user,
                     department=user.department
                 )
             else:
-                if asset_tag:
-                    asset.asset_tag = asset_tag
-                asset.hostname = hostname
-                asset.save()
-
-            if date_recorded_str:
-                from datetime import datetime
-                try:
-                    asset.date_recorded = datetime.strptime(date_recorded_str, "%Y-%m-%d").date()
+                # If we have asset details in payload, update it
+                if assets_list:
+                    if asset_tag:
+                        asset.asset_tag = asset_tag
+                    asset.hostname = hostname or None
                     asset.save()
-                except Exception:
-                    pass
+                # If assets_list is empty, we do NOT delete the asset, we just keep it
+                # so that other related specs (OS, CPU, etc.) have an asset to link to.
+
+            if assets_list:
+                if date_recorded_str:
+                    from datetime import datetime
+                    try:
+                        asset.date_recorded = datetime.strptime(date_recorded_str, "%Y-%m-%d").date()
+                        asset.save()
+                    except Exception:
+                        pass
+                else:
+                    asset.date_recorded = None
+                    asset.save()
+
 
             # Update Operating System
             asset.operating_systems.all().delete()
