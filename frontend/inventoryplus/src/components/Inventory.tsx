@@ -359,7 +359,7 @@ export default function Inventory({
   const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(-1);
   const [workstationSpecs, setWorkstationSpecs] = useState<{ [key: string]: any }>({});
   const [editingCardTitle, setEditingCardTitle] = useState<string | null>(null);
-  const [editingCardItems, setEditingCardItems] = useState<{ label: string, value: string }[]>([]);
+  const [editingCardItems, setEditingCardItems] = useState<any[]>([]);
 
   useEffect(() => {
     const saved = localStorage.getItem("inventoryplus_workstation_specs");
