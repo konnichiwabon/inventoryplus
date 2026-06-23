@@ -90,8 +90,14 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       assets: [
         { label: "Asset Tag", value: "AST-9821" },
         { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
-        { label: "OS Version", value: "Ubuntu 24.04 LTS" },
         { label: "Date Recorded", value: "2026-06-22" }
+      ],
+      os: [
+        [
+          { label: "OS Name", value: "Ubuntu" },
+          { label: "OS Version", value: "24.04 LTS" },
+          { label: "OS Architecture", value: "64-bit" }
+        ]
       ],
       motherboard: [
         { label: "MB Manufacturer", value: "ASUSTeK COMPUTER INC." },
@@ -166,8 +172,19 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
     assets: [
       { label: "Asset Tag", value: "AST-4412" },
       { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-      { label: "OS Version", value: "Windows 11 Pro" },
       { label: "Date Recorded", value: "2026-06-22" }
+    ],
+    os: [
+      [
+        { label: "OS Name", value: "Windows" },
+        { label: "OS Version", value: "11 Pro" },
+        { label: "OS Architecture", value: "64-bit" }
+      ],
+      [
+        { label: "OS Name", value: "Ubuntu" },
+        { label: "OS Version", value: "22.04 LTS" },
+        { label: "OS Architecture", value: "64-bit" }
+      ]
     ],
     motherboard: [
       { label: "MB Manufacturer", value: "Micro-Star International Co., Ltd." },
@@ -394,7 +411,8 @@ export default function Inventory({
     if (!currentMemberKey || !editingCardTitle) return;
 
     let categoryKey = "";
-    if (editingCardTitle === "Asset & OS") categoryKey = "assets";
+    if (editingCardTitle === "Asset Details") categoryKey = "assets";
+    else if (editingCardTitle === "Operating System") categoryKey = "os";
     else if (editingCardTitle === "Motherboard") categoryKey = "motherboard";
     else if (editingCardTitle === "CPU") categoryKey = "cpu";
     else if (editingCardTitle === "RAM") categoryKey = "ram";
@@ -536,11 +554,19 @@ export default function Inventory({
                   width: '100%',
                 }}>
                   <InfoCard
-                    title="Asset & OS"
+                    title="Asset Details"
                     icon={<MonitorIcon />}
                     variant="green"
                     items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")}
-                    onEdit={() => handleCardClick("Asset & OS", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
+                    onEdit={() => handleCardClick("Asset Details", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
+                  />
+
+                  <InfoCard
+                    title="Operating System"
+                    icon={<GlobeIcon />}
+                    variant="green"
+                    items={normalizeSpecCategory(specs.os)}
+                    onEdit={() => handleCardClick("Operating System", normalizeSpecCategory(specs.os))}
                   />
 
                   <InfoCard

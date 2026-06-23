@@ -63,6 +63,23 @@ export const InfoCard: React.FC<InfoCardProps> = ({
     ? (items as InfoItem[][])[safeActiveIndex] || []
     : (items as InfoItem[]);
 
+  const calculateTotalRam = (items: InfoItem[] | InfoItem[][]): string => {
+    let total = 0;
+    const flatItems = Array.isArray(items[0]) ? (items as InfoItem[][]).flat() : (items as InfoItem[]);
+    flatItems.forEach(item => {
+      if (item.label === "RAM Capacity" && typeof item.value === "string") {
+        const match = item.value.match(/(\d+)\s*(GB|MB|KB)/i);
+        if (match) {
+          const val = parseInt(match[1]);
+          const unit = match[2].toUpperCase();
+          if (unit === "GB") total += val;
+          else if (unit === "MB") total += val / 1024;
+        }
+      }
+    });
+    return total > 0 ? `${total} GB` : "";
+  };
+
   const getTabLabel = (itemGroup: InfoItem[], index: number, cardTitle: string): string => {
     const titleLower = cardTitle.toLowerCase();
     
@@ -72,7 +89,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
 
     const searchTerms = titleLower.includes('ram')
       ? ['slot']
-      : ['slot', 'type', 'model', 'brand'];
+      : ['slot', 'type', 'model', 'brand', 'name'];
 
     const slotItem = itemGroup.find(item =>
       searchTerms.some(term => item.label.toLowerCase().includes(term))
@@ -98,7 +115,20 @@ export const InfoCard: React.FC<InfoCardProps> = ({
               {icon}
             </div>
           </div>
-          <h3 className={`text-base font-bold m-0 ${styles.titleText}`}>{title}</h3>
+          <div className="flex items-baseline gap-2">
+            <h3 className={`text-base font-bold m-0 ${styles.titleText}`}>{title}</h3>
+            {title.toLowerCase() === "ram" && (() => {
+              const total = calculateTotalRam(items);
+              if (total) {
+                return (
+                  <span className="text-xs font-semibold opacity-75 shrink-0" style={{ color: 'inherit' }}>
+                    ({total})
+                  </span>
+                );
+              }
+              return null;
+            })()}
+          </div>
         </div>
         {onEdit && (
           <button
