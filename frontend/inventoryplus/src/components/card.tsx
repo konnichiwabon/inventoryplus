@@ -165,7 +165,7 @@ export const InfoCard: React.FC<InfoCardProps> = ({
 
       {/* Content Body */}
       <div className="p-5 flex flex-col gap-3 grow z-10">
-        {isMultiInstance && (
+        {isMultiInstance && (items as InfoItem[][]).length > 1 && (
           <div className="flex flex-wrap gap-1.5 pb-3 border-b border-[var(--border)] mb-2">
             {(items as InfoItem[][]).map((group, idx) => {
               const label = getTabLabel(group, idx, title);

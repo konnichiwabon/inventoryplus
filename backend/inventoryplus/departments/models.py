@@ -177,43 +177,39 @@ class Peripherals(models.Model):
         db_table = 'peripherals'
 
 
-class Software(models.Model):
-    software_id = models.AutoField(primary_key=True)
-    software_name = models.CharField(max_length=255, null=True, blank=True)
-    version = models.CharField(max_length=255, null=True, blank=True)
-    license_key = models.CharField(max_length=255, null=True, blank=True)
-    install_date = models.DateField(null=True, blank=True)
-
-    class Meta:
-        db_table = 'software'
-
-    def __str__(self):
-        return f"{self.software_name} ({self.version or 'no version'})"
-
-
-class AssetSoftware(models.Model):
-    asset_software_id = models.AutoField(primary_key=True)
+class OperatingSystem(models.Model):
+    os_id = models.AutoField(primary_key=True)
     asset = models.ForeignKey(
         Asset,
         on_delete=models.CASCADE,
-        related_name='asset_software'
+        related_name='operating_systems'
     )
-    software = models.ForeignKey(
-        Software,
-        on_delete=models.CASCADE,
-        related_name='asset_software'
-    )
-    version_installed = models.CharField(max_length=255, null=True, blank=True)
-    install_date = models.DateField(null=True, blank=True)
-    installed_by = models.CharField(max_length=255, null=True, blank=True)
-    license_type = models.CharField(max_length=255, null=True, blank=True)
-    license_key = models.CharField(max_length=255, null=True, blank=True)
-    cost = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    billing_cycle = models.CharField(max_length=255, null=True, blank=True)
-    renewal_date = models.DateField(null=True, blank=True)
-    status = models.CharField(max_length=255, null=True, blank=True)
-    removal_date = models.DateField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    version = models.CharField(max_length=255, null=True, blank=True)
+    architecture = models.CharField(max_length=255, null=True, blank=True)
+    partition = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
-        db_table = 'asset_software'
+        db_table = 'operating_system'
+
+    def __str__(self):
+        return f"{self.name or 'OS'} {self.version or ''}"
+
+
+class Monitor(models.Model):
+    monitor_id = models.AutoField(primary_key=True)
+    asset = models.ForeignKey(
+        Asset,
+        on_delete=models.CASCADE,
+        related_name='monitors'
+    )
+    brand = models.CharField(max_length=255, null=True, blank=True)
+    model = models.CharField(max_length=255, null=True, blank=True)
+    resolution = models.CharField(max_length=255, null=True, blank=True)
+    serial_number = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta:
+        db_table = 'monitor'
+
+    def __str__(self):
+        return f"{self.brand or 'Monitor'} {self.model or ''}"
