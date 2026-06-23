@@ -651,6 +651,25 @@ export default function Inventory({
       }
     }
 
+    // Auto-populate Date Recorded if empty
+    if (cardTitle === "Asset Details") {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const formattedNow = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+
+      template = template.map((item: any) => {
+        if (item.label === "Date Recorded" && !item.value) {
+          return { ...item, value: formattedNow };
+        }
+        return item;
+      });
+    }
+
     setEditingCardTitle(cardTitle);
     const formItems = template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
     setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
@@ -775,9 +794,22 @@ export default function Inventory({
                     value: String(subItem.value || "")
                   }));
                 }
+
+                let val = String(item.value || "");
+                if (cardTitle === "Asset Details" && item.label === "Date Recorded" && !val) {
+                  const now = new Date();
+                  const year = now.getFullYear();
+                  const month = String(now.getMonth() + 1).padStart(2, '0');
+                  const day = String(now.getDate()).padStart(2, '0');
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes()).padStart(2, '0');
+                  const seconds = String(now.getSeconds()).padStart(2, '0');
+                  val = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                }
+
                 return {
                   label: item.label,
-                  value: String(item.value || "")
+                  value: val
                 };
               }));
             };
@@ -1510,11 +1542,30 @@ export default function Inventory({
                       {item.label}
                     </label>
                     <input
-                      type="text"
-                      value={item.value}
+                      type={item.label === "Date Recorded" ? "datetime-local" : "text"}
+                      value={(() => {
+                        if (item.label === "Date Recorded" && item.value) {
+                          const clean = item.value.replace(" ", "T");
+                          if (clean.includes("T")) {
+                            const parts = clean.split(":");
+                            if (parts.length >= 2) {
+                              return `${parts[0]}:${parts[1]}`;
+                            }
+                          }
+                          return clean;
+                        }
+                        return item.value;
+                      })()}
                       onChange={(e) => {
                         const updatedItems = [...editingCardItems];
-                        updatedItems[idx].value = e.target.value;
+                        let val = e.target.value;
+                        if (item.label === "Date Recorded" && val) {
+                          val = val.replace("T", " ");
+                          if (val.split(":").length === 2) {
+                            val += ":00";
+                          }
+                        }
+                        updatedItems[idx].value = val;
                         setEditingCardItems(updatedItems);
                       }}
                       style={{
