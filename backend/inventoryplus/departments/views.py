@@ -83,11 +83,17 @@ def user_workstation_specs(request, user_id):
         if not asset:
             return JsonResponse({}, safe=False)
 
-        assets_data = [
-            {"label": "Asset Tag", "value": asset.asset_tag},
-            {"label": "Hostname", "value": asset.hostname or ""},
-            {"label": "Date Recorded", "value": asset.date_recorded.isoformat() if asset.date_recorded else ""}
-        ]
+        # Only show Asset Details card if user has entered meaningful data
+        # (not just an auto-created database parent row for other specs)
+        is_stub = (not asset.asset_tag) and (not asset.hostname) and (not asset.date_recorded)
+        assets_data = []
+        if not is_stub:
+            assets_data = [
+                {"label": "Asset Tag", "value": asset.asset_tag or ""},
+                {"label": "Hostname", "value": asset.hostname or ""},
+                {"label": "Date Recorded", "value": asset.date_recorded.isoformat() if asset.date_recorded else ""}
+            ]
+
 
         os_data = []
         for os_rec in asset.operating_systems.all().order_by('os_id'):
@@ -227,17 +233,15 @@ def user_workstation_specs(request, user_id):
             date_recorded_str = get_val(assets_list, "Date Recorded") if assets_list else ""
 
             if not asset:
-                if not asset_tag:
-                    asset_tag = f"AST-{user.user_id}"
-                
-                # Check for existing asset tag conflicts
-                conflict = Asset.objects.filter(asset_tag=asset_tag).first()
-                if conflict:
-                    import random
-                    asset_tag = f"{asset_tag}-{random.randint(100, 999)}"
+                if asset_tag:
+                    # Check for existing asset tag conflicts
+                    conflict = Asset.objects.filter(asset_tag=asset_tag).first()
+                    if conflict:
+                        import random
+                        asset_tag = f"{asset_tag}-{random.randint(100, 999)}"
 
                 asset = Asset.objects.create(
-                    asset_tag=asset_tag,
+                    asset_tag=asset_tag or None,
                     hostname=hostname or None,
                     user=user,
                     department=user.department
@@ -245,8 +249,7 @@ def user_workstation_specs(request, user_id):
             else:
                 # If we have asset details in payload, update it
                 if assets_list:
-                    if asset_tag:
-                        asset.asset_tag = asset_tag
+                    asset.asset_tag = asset_tag or None
                     asset.hostname = hostname or None
                     asset.save()
                 # If assets_list is empty, we do NOT delete the asset, we just keep it

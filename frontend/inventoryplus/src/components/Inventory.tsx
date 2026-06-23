@@ -574,21 +574,35 @@ export default function Inventory({
 
     const currentMemberSpecs = workstationSpecs[currentMemberKey] || currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
 
+    const MULTI_INSTANCE_CATEGORIES = ["os", "ram", "storage", "monitor", "peripherals"];
     const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
+
+    let formattedItems: any;
+    if (isMulti) {
+      // Already nested array format [[{label, value}, ...], ...]
+      formattedItems = (editingCardItems as any[][]).map(moduleItems =>
+        moduleItems.map(item => ({
+          label: item.label,
+          value: item.value
+        }))
+      );
+    } else {
+      // Flat array format [{label, value}, ...]
+      const flatItems = (editingCardItems as any[]).map(item => ({
+        label: item.label,
+        value: item.value
+      }));
+      // Wrap in nested array if this category expects multi-instance format
+      if (MULTI_INSTANCE_CATEGORIES.includes(categoryKey)) {
+        formattedItems = [flatItems];
+      } else {
+        formattedItems = flatItems;
+      }
+    }
 
     const updatedSpecs = {
       ...currentMemberSpecs,
-      [categoryKey]: isMulti
-        ? (editingCardItems as any[][]).map(moduleItems =>
-            moduleItems.map(item => ({
-              label: item.label,
-              value: item.value
-            }))
-          )
-        : (editingCardItems as any[]).map(item => ({
-            label: item.label,
-            value: item.value
-          }))
+      [categoryKey]: formattedItems
     };
 
     const newWorkstationSpecs = {
