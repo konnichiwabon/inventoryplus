@@ -113,7 +113,8 @@ def user_workstation_specs(request, user_id):
                 {"label": "MB Manufacturer", "value": mb.manufacturer or ""},
                 {"label": "MB Model", "value": mb.model or ""},
                 {"label": "MB Serial Number", "value": mb.serial_number or ""},
-                {"label": "BIOS Serial Number", "value": mb.bios_serial_number or ""}
+                {"label": "BIOS Serial Number", "value": mb.bios_serial_number or ""},
+                {"label": "Case", "value": mb.chassis or ""}
             ]
 
         cpu = asset.cpus.first()
@@ -301,7 +302,8 @@ def user_workstation_specs(request, user_id):
                     manufacturer=get_val(mb_list, "MB Manufacturer"),
                     model=get_val(mb_list, "MB Model"),
                     serial_number=get_val(mb_list, "MB Serial Number"),
-                    bios_serial_number=get_val(mb_list, "BIOS Serial Number")
+                    bios_serial_number=get_val(mb_list, "BIOS Serial Number"),
+                    chassis=get_val(mb_list, "Case")
                 )
 
             # Update CPU

@@ -105,6 +105,7 @@ class Motherboard(models.Model):
     bios_serial_number = models.CharField(max_length=255, null=True, blank=True)
     manufacturer = models.CharField(max_length=255, null=True, blank=True)
     model = models.CharField(max_length=255, null=True, blank=True)
+    chassis = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         db_table = 'motherboard'
