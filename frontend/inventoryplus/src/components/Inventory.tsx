@@ -52,12 +52,6 @@ const KeyboardIcon = () => (
   </svg>
 );
 
-const LeafIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.58 1 9.3a7 7 0 0 1-13.9 1.9" />
-    <path d="M19 2c-2.26 6.19-7.74 8.81-12 12" />
-  </svg>
-);
 
 const cardProps = {
   name: "EDDT",
@@ -487,6 +481,66 @@ export default function Inventory({
     ? `${selectedDepartment}-${selectedMemberCleanName}`
     : "";
 
+  const selectedMemberObj = selectedDepartment && selectedMemberIndex !== -1 && members[selectedMemberIndex]
+    ? members[selectedMemberIndex]
+    : null;
+
+  useEffect(() => {
+    if (selectedMemberObj && selectedMemberObj.id) {
+      const fetchSpecs = async () => {
+        try {
+          const res = await fetch(`http://127.0.0.1:8000/api/users/${selectedMemberObj.id}/specs/`);
+          if (res.ok) {
+            const data = await res.json();
+            let specsObj = {};
+            if (Object.keys(data).length === 0) {
+              if (selectedMemberObj.username === "Jack Sparrow" || selectedMemberObj.username === "Sarah Connor") {
+                specsObj = getDefaultWorkstationSpecs(selectedMemberObj.username, selectedDepartment || "");
+              } else {
+                specsObj = {
+                  assets: [],
+                  os: [],
+                  motherboard: [],
+                  cpu: [],
+                  ram: [],
+                  storage: [],
+                  gpu: [],
+                  monitor: [],
+                  network: [],
+                  peripherals: []
+                };
+              }
+            } else {
+              specsObj = data;
+            }
+            setWorkstationSpecs(prev => ({
+              ...prev,
+              [currentMemberKey]: specsObj
+            }));
+          }
+        } catch (err) {
+          console.error("Error fetching workstation specs:", err);
+        }
+      };
+      fetchSpecs();
+    }
+  }, [selectedMemberObj, currentMemberKey, selectedDepartment]);
+
+  const saveSpecsToDb = async (updatedSpecs: any) => {
+    if (!selectedMemberObj || !selectedMemberObj.id) return;
+    try {
+      await fetch(`http://127.0.0.1:8000/api/users/${selectedMemberObj.id}/specs/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updatedSpecs)
+      });
+    } catch (err) {
+      console.error("Error saving workstation specs:", err);
+    }
+  };
+
   const handleSaveCardEdits = (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentMemberKey || !editingCardTitle) return;
@@ -515,7 +569,7 @@ export default function Inventory({
       }
     }
 
-    const currentMemberSpecs = currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
+    const currentMemberSpecs = workstationSpecs[currentMemberKey] || currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
 
     const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
 
@@ -541,6 +595,7 @@ export default function Inventory({
 
     setWorkstationSpecs(newWorkstationSpecs);
     localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+    saveSpecsToDb(updatedSpecs);
     setEditingCardTitle(null);
   };
 
@@ -573,6 +628,7 @@ export default function Inventory({
 
     setWorkstationSpecs(newWorkstationSpecs);
     localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+    saveSpecsToDb(updatedSpecs);
 
     setEditingCardTitle(cardTitle);
     setEditingCardItems(JSON.parse(JSON.stringify(template)));
@@ -607,7 +663,7 @@ export default function Inventory({
       }
     }
 
-    const currentMemberSpecs = currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
+    const currentMemberSpecs = workstationSpecs[currentMemberKey] || currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
 
     const updatedSpecs = {
       ...currentMemberSpecs,
@@ -621,6 +677,7 @@ export default function Inventory({
 
     setWorkstationSpecs(newWorkstationSpecs);
     localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
+    saveSpecsToDb(updatedSpecs);
     setEditingCardTitle(null);
   };
 
