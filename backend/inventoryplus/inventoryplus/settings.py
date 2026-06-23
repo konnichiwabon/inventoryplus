@@ -60,6 +60,8 @@ MIDDLEWARE = [
 
 CORS_ALLOW_ALL_ORIGINS = True
 
+CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.ondigitalocean.app').split(',')
+
 ROOT_URLCONF = 'inventoryplus.urls'
 
 TEMPLATES = [
@@ -83,14 +85,22 @@ WSGI_APPLICATION = 'inventoryplus.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-database_url = os.getenv('DATABASE_URL', f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-DATABASES = {
-    'default': dj_database_url.config(
-        default=database_url,
-        conn_max_age=600,
-        ssl_require=database_url.startswith('postgres')
-    )
-}
+database_url = os.getenv('DATABASE_URL')
+if database_url and not database_url.startswith('your_password_here') and len(database_url.strip()) > 0:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=database_url,
+            conn_max_age=600,
+            ssl_require=database_url.startswith('postgres') or database_url.startswith('pgsql')
+        )
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation

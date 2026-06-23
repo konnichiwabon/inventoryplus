@@ -53,6 +53,8 @@ const KeyboardIcon = () => (
 );
 
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+
 const cardProps = {
   name: "EDDT",
 
@@ -377,7 +379,7 @@ export default function Inventory({
 
   const fetchDepartments = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/departments/");
+      const res = await fetch(`${API_BASE_URL}/api/departments/`);
       if (res.ok) {
         const data = await res.json();
         const loadedCards = data.map((dept: any) => ({
@@ -405,7 +407,7 @@ export default function Inventory({
     if (!newDeptName.trim()) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/departments/", {
+      const res = await fetch(`${API_BASE_URL}/api/departments/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: newDeptName.trim() }),
@@ -427,7 +429,7 @@ export default function Inventory({
 
   const fetchMembers = async (deptName: string) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/departments/${encodeURIComponent(deptName)}/users/`);
+      const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(deptName)}/users/`);
       if (res.ok) {
         const data = await res.json();
         setMembers(data);
@@ -450,7 +452,7 @@ export default function Inventory({
     if (!newMemberName.trim() || !selectedDepartment) return;
 
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
+      const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -489,7 +491,7 @@ export default function Inventory({
     if (selectedMemberObj && selectedMemberObj.id) {
       const fetchSpecs = async () => {
         try {
-          const res = await fetch(`http://127.0.0.1:8000/api/users/${selectedMemberObj.id}/specs/`);
+          const res = await fetch(`${API_BASE_URL}/api/users/${selectedMemberObj.id}/specs/`);
           if (res.ok) {
             const data = await res.json();
             let specsObj = {};
@@ -529,7 +531,7 @@ export default function Inventory({
   const saveSpecsToDb = async (updatedSpecs: any) => {
     if (!selectedMemberObj || !selectedMemberObj.id) return;
     try {
-      await fetch(`http://127.0.0.1:8000/api/users/${selectedMemberObj.id}/specs/`, {
+      await fetch(`${API_BASE_URL}/api/users/${selectedMemberObj.id}/specs/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
