@@ -76,6 +76,14 @@ const cardProps = {
   innerGradient: "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)",
 };
 
+const normalizeSpecCategory = (items: any): any[][] => {
+  if (!items || items.length === 0) return [[]];
+  if (!Array.isArray(items[0])) {
+    return [items];
+  }
+  return items;
+};
+
 const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
   if (mName.includes("Sarah Connor")) {
     return {
@@ -100,17 +108,21 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
         { label: "CPU Threads", value: "12" }
       ],
       ram: [
-        { label: "RAM Capacity", value: "16 GB" },
-        { label: "RAM Speed", value: "3200 MHz" },
-        { label: "RAM Model", value: "Corsair Vengeance LPX" },
-        { label: "RAM Slot Number", value: "DIMM_A2" },
-        { label: "RAM Serial Number", value: "CMK16GX4M2B3200C16" }
+        [
+          { label: "RAM Capacity", value: "16 GB" },
+          { label: "RAM Speed", value: "3200 MHz" },
+          { label: "RAM Model", value: "Corsair Vengeance LPX" },
+          { label: "RAM Slot Number", value: "DIMM_A2" },
+          { label: "RAM Serial Number", value: "CMK16GX4M2B3200C16" }
+        ]
       ],
       storage: [
-        { label: "Storage Type", value: "SSD (NVMe)" },
-        { label: "Storage Capacity", value: "512 GB" },
-        { label: "Storage Interface", value: "PCIe Gen 4.0" },
-        { label: "Storage Serial Number", value: "S67ENX0R203920" }
+        [
+          { label: "Storage Type", value: "SSD (NVMe)" },
+          { label: "Storage Capacity", value: "512 GB" },
+          { label: "Storage Interface", value: "PCIe Gen 4.0" },
+          { label: "Storage Serial Number", value: "S67ENX0R203920" }
+        ]
       ],
       gpu: [
         { label: "GPU Manufacturer", value: "AMD" },
@@ -128,19 +140,26 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
         { label: "Omada Username", value: "net_admin" }
       ],
       peripherals: [
-        { label: "Peripheral Type", value: "Keyboard" },
-        { label: "Peripheral Brand", value: "Keychron" },
-        { label: "Peripheral Model", value: "K2 (Bluetooth)" },
-        { label: "Peripheral Serial Number", value: "SN-PER-4819" }
+        [
+          { label: "Peripheral Type", value: "Keyboard" },
+          { label: "Peripheral Brand", value: "Keychron" },
+          { label: "Peripheral Model", value: "K2 (Bluetooth)" },
+          { label: "Peripheral Serial Number", value: "SN-PER-4819" }
+        ],
+        [
+          { label: "Peripheral Type", value: "Mouse" },
+          { label: "Peripheral Brand", value: "Razer" },
+          { label: "Peripheral Model", value: "DeathAdder V2" },
+          { label: "Peripheral Serial Number", value: "SN-MS-7712" }
+        ]
       ],
-      software: [
-        { label: "Software Name", value: "VS Code" },
-        { label: "Software Version", value: "1.90.1" },
-        { label: "License Type", value: "Open Source" },
-        { label: "License Key", value: "N/A" },
-        { label: "Install Date", value: "2026-06-15" },
-        { label: "Installed By", value: "admin" },
-        { label: "Status", value: "Active" }
+      monitor: [
+        [
+          { label: "Monitor Brand", value: "ASUS" },
+          { label: "Monitor Model", value: "TUF Gaming VG27AQ" },
+          { label: "Monitor Resolution", value: "2560x1440" },
+          { label: "Monitor Serial Number", value: "SN-MON-98124" }
+        ]
       ]
     };
   }
@@ -167,17 +186,28 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       { label: "CPU Threads", value: "20" }
     ],
     ram: [
-      { label: "RAM Capacity", value: "32 GB" },
-      { label: "RAM Speed", value: "5200 MHz" },
-      { label: "RAM Model", value: "G.Skill Trident Z5" },
-      { label: "RAM Slot Number", value: "DIMM_B2" },
-      { label: "RAM Serial Number", value: "F5-5200J4040A16GX2" }
+      [
+        { label: "RAM Capacity", value: "16 GB" },
+        { label: "RAM Speed", value: "5200 MHz" },
+        { label: "RAM Model", value: "G.Skill Trident Z5" },
+        { label: "RAM Slot Number", value: "DIMM_A2" },
+        { label: "RAM Serial Number", value: "F5-5200J4040A16GX2-1" }
+      ],
+      [
+        { label: "RAM Capacity", value: "16 GB" },
+        { label: "RAM Speed", value: "5200 MHz" },
+        { label: "RAM Model", value: "G.Skill Trident Z5" },
+        { label: "RAM Slot Number", value: "DIMM_B2" },
+        { label: "RAM Serial Number", value: "F5-5200J4040A16GX2-2" }
+      ]
     ],
     storage: [
-      { label: "Storage Type", value: "SSD (NVMe)" },
-      { label: "Storage Capacity", value: "1 TB" },
-      { label: "Storage Interface", value: "PCIe Gen 4.0 x4" },
-      { label: "Storage Serial Number", value: "S67ENX0R203920" }
+      [
+        { label: "Storage Type", value: "SSD (NVMe)" },
+        { label: "Storage Capacity", value: "1 TB" },
+        { label: "Storage Interface", value: "PCIe Gen 4.0 x4" },
+        { label: "Storage Serial Number", value: "S67ENX0R203920" }
+      ]
     ],
     gpu: [
       { label: "GPU Manufacturer", value: "NVIDIA" },
@@ -195,19 +225,32 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       { label: "Omada Username", value: "net_admin" }
     ],
     peripherals: [
-      { label: "Peripheral Type", value: "Mouse" },
-      { label: "Peripheral Brand", value: "Logitech" },
-      { label: "Peripheral Model", value: "MX Master 3S" },
-      { label: "Peripheral Serial Number", value: "SN-PER-12345" }
+      [
+        { label: "Peripheral Type", value: "Keyboard" },
+        { label: "Peripheral Brand", value: "Keychron" },
+        { label: "Peripheral Model", value: "K8 (Wireless)" },
+        { label: "Peripheral Serial Number", value: "SN-KB-9921" }
+      ],
+      [
+        { label: "Peripheral Type", value: "Mouse" },
+        { label: "Peripheral Brand", value: "Logitech" },
+        { label: "Peripheral Model", value: "MX Master 3S" },
+        { label: "Peripheral Serial Number", value: "SN-MS-12345" }
+      ]
     ],
-    software: [
-      { label: "Software Name", value: "VS Code" },
-      { label: "Software Version", value: "1.90.1" },
-      { label: "License Type", value: "Open Source" },
-      { label: "License Key", value: "N/A" },
-      { label: "Install Date", value: "2026-06-15" },
-      { label: "Installed By", value: "admin" },
-      { label: "Status", value: "Active" }
+    monitor: [
+      [
+        { label: "Monitor Brand", value: "Dell" },
+        { label: "Monitor Model", value: "UltraSharp U2723QE" },
+        { label: "Monitor Resolution", value: "3840x2160" },
+        { label: "Monitor Serial Number", value: "SN-MON-44129" }
+      ],
+      [
+        { label: "Monitor Brand", value: "Dell" },
+        { label: "Monitor Model", value: "UltraSharp U2723QE" },
+        { label: "Monitor Resolution", value: "3840x2160" },
+        { label: "Monitor Serial Number", value: "SN-MON-44130" }
+      ]
     ]
   };
 };
@@ -363,7 +406,7 @@ export default function Inventory({
     else if (editingCardTitle === "GPU") categoryKey = "gpu";
     else if (editingCardTitle === "Network") categoryKey = "network";
     else if (editingCardTitle === "Peripherals") categoryKey = "peripherals";
-    else if (editingCardTitle === "Software") categoryKey = "software";
+    else if (editingCardTitle === "Monitor") categoryKey = "monitor";
 
     if (!categoryKey) return;
 
@@ -379,12 +422,21 @@ export default function Inventory({
 
     const currentMemberSpecs = currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
 
+    const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
+
     const updatedSpecs = {
       ...currentMemberSpecs,
-      [categoryKey]: editingCardItems.map(item => ({
-        label: item.label,
-        value: item.value
-      }))
+      [categoryKey]: isMulti
+        ? (editingCardItems as any[][]).map(moduleItems =>
+            moduleItems.map(item => ({
+              label: item.label,
+              value: item.value
+            }))
+          )
+        : (editingCardItems as any[]).map(item => ({
+            label: item.label,
+            value: item.value
+          }))
     };
 
     const newWorkstationSpecs = {
@@ -462,10 +514,18 @@ export default function Inventory({
 
             const handleCardClick = (cardTitle: string, currentItems: any[]) => {
               setEditingCardTitle(cardTitle);
-              setEditingCardItems(currentItems.map(item => ({
-                label: item.label,
-                value: String(item.value || "")
-              })));
+              setEditingCardItems(currentItems.map(item => {
+                if (Array.isArray(item)) {
+                  return item.map(subItem => ({
+                    label: subItem.label,
+                    value: String(subItem.value || "")
+                  }));
+                }
+                return {
+                  label: item.label,
+                  value: String(item.value || "")
+                };
+              }));
             };
 
             return (
@@ -507,16 +567,16 @@ export default function Inventory({
                     title="RAM"
                     icon={<MonitorIcon />}
                     variant="blue"
-                    items={specs.ram || []}
-                    onEdit={() => handleCardClick("RAM", specs.ram || [])}
+                    items={normalizeSpecCategory(specs.ram)}
+                    onEdit={() => handleCardClick("RAM", normalizeSpecCategory(specs.ram))}
                   />
 
                   <InfoCard
                     title="Storage"
                     icon={<MonitorIcon />}
                     variant="blue"
-                    items={specs.storage || []}
-                    onEdit={() => handleCardClick("Storage", specs.storage || [])}
+                    items={normalizeSpecCategory(specs.storage)}
+                    onEdit={() => handleCardClick("Storage", normalizeSpecCategory(specs.storage))}
                   />
 
                   <InfoCard
@@ -525,6 +585,14 @@ export default function Inventory({
                     variant="blue"
                     items={specs.gpu || []}
                     onEdit={() => handleCardClick("GPU", specs.gpu || [])}
+                  />
+
+                  <InfoCard
+                    title="Monitor"
+                    icon={<MonitorIcon />}
+                    variant="blue"
+                    items={normalizeSpecCategory(specs.monitor)}
+                    onEdit={() => handleCardClick("Monitor", normalizeSpecCategory(specs.monitor))}
                   />
 
                   <InfoCard
@@ -539,16 +607,8 @@ export default function Inventory({
                     title="Peripherals"
                     icon={<KeyboardIcon />}
                     variant="green"
-                    items={specs.peripherals || []}
-                    onEdit={() => handleCardClick("Peripherals", specs.peripherals || [])}
-                  />
-
-                  <InfoCard
-                    title="Software"
-                    icon={<KeyboardIcon />}
-                    variant="green"
-                    items={specs.software || []}
-                    onEdit={() => handleCardClick("Software", specs.software || [])}
+                    items={normalizeSpecCategory(specs.peripherals)}
+                    onEdit={() => handleCardClick("Peripherals", normalizeSpecCategory(specs.peripherals))}
                   />
                 </div>
               </div>
@@ -879,33 +939,157 @@ export default function Inventory({
               Edit {editingCardTitle} Specs
             </h3>
             <form onSubmit={handleSaveCardEdits} style={{ display: "flex", flexDirection: "column", gap: "16px", overflowY: "auto", paddingRight: "4px", flex: 1 }}>
-              {editingCardItems.map((item, idx) => (
-                <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
-                    {item.label}
-                  </label>
-                  <input
-                    type="text"
-                    value={item.value}
-                    onChange={(e) => {
-                      const updatedItems = [...editingCardItems];
-                      updatedItems[idx].value = e.target.value;
-                      setEditingCardItems(updatedItems);
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      border: "1px solid var(--border)",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      backgroundColor: "transparent",
-                      color: "var(--text-h)",
-                      outline: "none",
-                      boxSizing: "border-box",
-                    }}
-                  />
-                </div>
-              ))}
+              {(() => {
+                const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
+                if (isMulti) {
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                      {(editingCardItems as any[][]).map((moduleItems, moduleIdx) => {
+                        const slotItem = moduleItems.find(item =>
+                          item.label.toLowerCase().includes('slot') ||
+                          item.label.toLowerCase().includes('type')
+                        );
+                        const moduleLabel = slotItem && slotItem.value
+                          ? `${editingCardTitle} (${slotItem.value})`
+                          : `${editingCardTitle} #${moduleIdx + 1}`;
+
+                        return (
+                          <div
+                            key={moduleIdx}
+                            style={{
+                              border: "1px solid var(--border)",
+                              borderRadius: "12px",
+                              padding: "16px",
+                              backgroundColor: "rgba(0, 0, 0, 0.02)",
+                              position: "relative"
+                            }}
+                          >
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
+                              <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-h)" }}>
+                                {moduleLabel}
+                              </h4>
+                              {(editingCardItems as any[][]).length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const updated = (editingCardItems as any[][]).filter((_, i) => i !== moduleIdx);
+                                    setEditingCardItems(updated);
+                                  }}
+                                  style={{
+                                    background: "none",
+                                    border: "none",
+                                    color: "#F43F5E",
+                                    fontSize: "12px",
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    padding: "4px 8px",
+                                    borderRadius: "4px",
+                                    transition: "background-color 0.2s"
+                                  }}
+                                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.1)")}
+                                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
+                                >
+                                  Remove
+                                </button>
+                              )}
+                            </div>
+
+                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                              {moduleItems.map((item, idx) => (
+                                <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                                    {item.label}
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={item.value}
+                                    onChange={(e) => {
+                                      const updatedItems = [...editingCardItems] as any[][];
+                                      updatedItems[moduleIdx][idx].value = e.target.value;
+                                      setEditingCardItems(updatedItems);
+                                    }}
+                                    style={{
+                                      width: "100%",
+                                      padding: "8px 12px",
+                                      border: "1px solid var(--border)",
+                                      borderRadius: "8px",
+                                      fontSize: "14px",
+                                      backgroundColor: "transparent",
+                                      color: "var(--text-h)",
+                                      outline: "none",
+                                      boxSizing: "border-box",
+                                    }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const prototypeModule = (editingCardItems as any[][])[0];
+                          const newModule = prototypeModule.map(item => ({
+                            label: item.label,
+                            value: ""
+                          }));
+                          setEditingCardItems([...editingCardItems, newModule]);
+                        }}
+                        style={{
+                          padding: "10px",
+                          backgroundColor: "transparent",
+                          border: "1px dashed var(--border)",
+                          borderRadius: "8px",
+                          color: "var(--text-h)",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.2s"
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.backgroundColor = "var(--code-bg)";
+                          e.currentTarget.style.borderColor = "var(--text-h)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.backgroundColor = "transparent";
+                          e.currentTarget.style.borderColor = "var(--border)";
+                        }}
+                      >
+                        + Add {editingCardTitle} Stick/Drive
+                      </button>
+                    </div>
+                  );
+                }
+
+                return editingCardItems.map((item, idx) => (
+                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                    <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                      {item.label}
+                    </label>
+                    <input
+                      type="text"
+                      value={item.value}
+                      onChange={(e) => {
+                        const updatedItems = [...editingCardItems];
+                        updatedItems[idx].value = e.target.value;
+                        setEditingCardItems(updatedItems);
+                      }}
+                      style={{
+                        width: "100%",
+                        padding: "8px 12px",
+                        border: "1px solid var(--border)",
+                        borderRadius: "8px",
+                        fontSize: "14px",
+                        backgroundColor: "transparent",
+                        color: "var(--text-h)",
+                        outline: "none",
+                        boxSizing: "border-box",
+                      }}
+                    />
+                  </div>
+                ));
+              })()}
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "16px", paddingBottom: "4px" }}>
                 <button
                   type="button"
