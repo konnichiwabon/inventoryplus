@@ -90,7 +90,6 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       assets: [
         { label: "Asset Tag", value: "AST-9821" },
         { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
-        { label: "Omada Username", value: "omada_admin" },
         { label: "OS Version", value: "Ubuntu 24.04 LTS" },
         { label: "Date Recorded", value: "2026-06-22" }
       ],
@@ -167,7 +166,6 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
     assets: [
       { label: "Asset Tag", value: "AST-4412" },
       { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-      { label: "Omada Username", value: "omada_admin" },
       { label: "OS Version", value: "Windows 11 Pro" },
       { label: "Date Recorded", value: "2026-06-22" }
     ],
@@ -541,8 +539,8 @@ export default function Inventory({
                     title="Asset & OS"
                     icon={<MonitorIcon />}
                     variant="green"
-                    items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID")}
-                    onEdit={() => handleCardClick("Asset & OS", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID"))}
+                    items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")}
+                    onEdit={() => handleCardClick("Asset & OS", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
                   />
 
                   <InfoCard
