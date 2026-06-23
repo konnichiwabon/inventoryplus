@@ -83,16 +83,18 @@ def user_workstation_specs(request, user_id):
         if not asset:
             return JsonResponse({}, safe=False)
 
+        assets_data = [
+            {"label": "Asset UUID", "value": str(asset.asset_uuid)}
+        ]
         # Only show Asset Details card if user has entered meaningful data
         # (not just an auto-created database parent row for other specs)
         is_stub = (not asset.asset_tag) and (not asset.hostname) and (not asset.date_recorded)
-        assets_data = []
         if not is_stub:
-            assets_data = [
+            assets_data.extend([
                 {"label": "Asset Tag", "value": asset.asset_tag or ""},
                 {"label": "Hostname", "value": asset.hostname or ""},
                 {"label": "Date Recorded", "value": asset.date_recorded.isoformat() if asset.date_recorded else ""}
-            ]
+            ])
 
 
         os_data = []
@@ -224,13 +226,22 @@ def user_workstation_specs(request, user_id):
                 user.assets.all().delete()
                 return JsonResponse({"status": "deleted"})
 
-            # Ensure the asset object exists in the database
-            asset = user.assets.first()
-            
             assets_list = body.get("assets", [])
+            asset_uuid_str = get_val(assets_list, "Asset UUID") if assets_list else ""
             asset_tag = get_val(assets_list, "Asset Tag") if assets_list else ""
             hostname = get_val(assets_list, "Hostname") if assets_list else ""
             date_recorded_str = get_val(assets_list, "Date Recorded") if assets_list else ""
+
+            # Try to lookup asset using its Asset UUID first
+            asset = None
+            if asset_uuid_str:
+                try:
+                    asset = Asset.objects.filter(asset_uuid=asset_uuid_str).first()
+                except Exception:
+                    pass
+
+            if not asset:
+                asset = user.assets.first()
 
             if not asset:
                 if asset_tag:

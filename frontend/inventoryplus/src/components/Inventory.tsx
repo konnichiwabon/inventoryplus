@@ -920,7 +920,7 @@ export default function Inventory({
                   gap: '24px',
                   width: '100%',
                 }}>
-                  {specs.assets && specs.assets.length > 0 && (
+                  {specs.assets && (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username").some((item: any) => item.value !== "") && (
                     <InfoCard
                       title="Asset Details"
                       icon={<MonitorIcon />}
