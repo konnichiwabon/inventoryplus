@@ -269,6 +269,11 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
 };
 
 const CARD_TEMPLATES: Record<string, any> = {
+  "Asset Details": [
+    { label: "Asset Tag", value: "" },
+    { label: "Hostname", value: "" },
+    { label: "Date Recorded", value: "" }
+  ],
   "Operating System": [
     [
       { label: "OS Name", value: "" },
@@ -694,6 +699,7 @@ export default function Inventory({
             };
 
             const ALL_CATEGORIES = [
+              { title: "Asset Details", key: "assets" },
               { title: "Operating System", key: "os" },
               { title: "Motherboard", key: "motherboard" },
               { title: "CPU", key: "cpu" },
@@ -748,13 +754,35 @@ export default function Inventory({
                   gap: '24px',
                   width: '100%',
                 }}>
-                  <InfoCard
-                    title="Asset Details"
-                    icon={<MonitorIcon />}
-                    variant="green"
-                    items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")}
-                    onEdit={() => handleCardClick("Asset Details", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
-                  />
+                  {specs.assets && specs.assets.length > 0 && (
+                    <InfoCard
+                      title="Asset Details"
+                      icon={<MonitorIcon />}
+                      variant="green"
+                      items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")}
+                      onEdit={() => handleCardClick("Asset Details", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
+                    />
+                  )}
+
+                  {hiddenCategories.length === ALL_CATEGORIES.length && (
+                    <div style={{
+                      gridColumn: "1 / -1",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "48px 24px",
+                      border: "2px dashed var(--border)",
+                      borderRadius: "16px",
+                      color: "var(--text)",
+                      textAlign: "center",
+                      gap: "8px",
+                      backgroundColor: "rgba(255, 255, 255, 0.02)"
+                    }}>
+                      <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-h)" }}>No specifications added yet</span>
+                      <span style={{ fontSize: "13px", opacity: 0.8 }}>Select a category from the dropdown above to start configuring this workstation.</span>
+                    </div>
+                  )}
 
                   {specs.os && specs.os.length > 0 && (
                     <InfoCard
@@ -1326,7 +1354,7 @@ export default function Inventory({
                 ));
               })()}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px", paddingBottom: "4px" }}>
-                {editingCardTitle !== "Asset Details" ? (
+                {editingCardTitle ? (
                   <button
                     type="button"
                     onClick={() => handleDeleteCard(editingCardTitle!)}
