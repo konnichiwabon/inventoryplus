@@ -605,9 +605,11 @@ export default function Inventory({
     let finalFormattedItems = formattedItems;
     if (categoryKey === "assets" && Array.isArray(formattedItems)) {
       const existingUuid = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Asset UUID");
-      if (existingUuid) {
-        finalFormattedItems = [existingUuid, ...formattedItems];
-      }
+      const existingOmada = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Omada Username");
+      const extra = [];
+      if (existingUuid) extra.push(existingUuid);
+      if (existingOmada) extra.push(existingOmada);
+      finalFormattedItems = [...extra, ...formattedItems.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")];
     }
 
     const updatedSpecs = {
@@ -643,12 +645,14 @@ export default function Inventory({
 
     let template = CARD_TEMPLATES[cardTitle] || [];
     
-    // For "assets", preserve existing UUID if there is one
+    // For "assets", preserve existing UUID and Omada Username if there is one
     if (categoryKey === "assets" && currentSpecs.assets) {
       const existingUuid = currentSpecs.assets.find((item: any) => item.label === "Asset UUID");
-      if (existingUuid) {
-        template = [existingUuid, ...template];
-      }
+      const existingOmada = currentSpecs.assets.find((item: any) => item.label === "Omada Username");
+      const extra = [];
+      if (existingUuid) extra.push(existingUuid);
+      if (existingOmada) extra.push(existingOmada);
+      template = [...extra, ...template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")];
     }
 
     // Auto-populate Date Recorded if empty
@@ -671,7 +675,7 @@ export default function Inventory({
     }
 
     setEditingCardTitle(cardTitle);
-    const formItems = template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+    const formItems = template.filter((item: any) => item.label !== "Asset UUID");
     setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
   };
 
