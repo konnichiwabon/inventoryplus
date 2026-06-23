@@ -168,8 +168,8 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
   return {
     assets: [
       { label: "Asset Tag", value: "AST-4412" },
-      { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-      { label: "Date Recorded", value: "2026-06-22" }
+      { label: "Username", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
+      { label: "Date Recorded", value: "2026-06-22 10:00:00" }
     ],
     os: [
       [
@@ -269,7 +269,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
 const CARD_TEMPLATES: Record<string, any> = {
   "Asset Details": [
     { label: "Asset Tag", value: "" },
-    { label: "Hostname", value: "" },
+    { label: "Username", value: "" },
     { label: "Date Recorded", value: "" }
   ],
   "Operating System": [
@@ -602,9 +602,17 @@ export default function Inventory({
       }
     }
 
+    let finalFormattedItems = formattedItems;
+    if (categoryKey === "assets" && Array.isArray(formattedItems)) {
+      const existingUuid = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Asset UUID");
+      if (existingUuid) {
+        finalFormattedItems = [existingUuid, ...formattedItems];
+      }
+    }
+
     const updatedSpecs = {
       ...currentMemberSpecs,
-      [categoryKey]: formattedItems
+      [categoryKey]: finalFormattedItems
     };
 
     const newWorkstationSpecs = {
@@ -633,24 +641,19 @@ export default function Inventory({
 
     if (!categoryKey) return;
 
-    const template = CARD_TEMPLATES[cardTitle] || [];
-
-    const updatedSpecs = {
-      ...currentSpecs,
-      [categoryKey]: template
-    };
-
-    const newWorkstationSpecs = {
-      ...workstationSpecs,
-      [currentMemberKey]: updatedSpecs
-    };
-
-    setWorkstationSpecs(newWorkstationSpecs);
-    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
-    saveSpecsToDb(updatedSpecs);
+    let template = CARD_TEMPLATES[cardTitle] || [];
+    
+    // For "assets", preserve existing UUID if there is one
+    if (categoryKey === "assets" && currentSpecs.assets) {
+      const existingUuid = currentSpecs.assets.find((item: any) => item.label === "Asset UUID");
+      if (existingUuid) {
+        template = [existingUuid, ...template];
+      }
+    }
 
     setEditingCardTitle(cardTitle);
-    setEditingCardItems(JSON.parse(JSON.stringify(template)));
+    const formItems = template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+    setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
   };
 
   const handleDeleteCard = (cardTitle: string) => {
@@ -792,7 +795,15 @@ export default function Inventory({
               { title: "Peripherals", key: "peripherals" }
             ];
 
-            const hiddenCategories = ALL_CATEGORIES.filter(cat => !specs[cat.key] || specs[cat.key].length === 0);
+             const hiddenCategories = ALL_CATEGORIES.filter(cat => {
+               const val = specs[cat.key];
+               if (!val || val.length === 0) return true;
+               if (cat.key === "assets") {
+                 const displayable = (val || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+                 return !displayable.some((item: any) => item.value !== "");
+               }
+               return false;
+             });
 
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
