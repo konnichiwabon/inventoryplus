@@ -187,7 +187,8 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       { label: "MB Manufacturer", value: "Micro-Star International Co., Ltd." },
       { label: "MB Model", value: "PRO Z690-A WIFI" },
       { label: "MB Serial Number", value: "L9M1KC071821" },
-      { label: "BIOS Serial Number", value: "MS-7D25" }
+      { label: "BIOS Serial Number", value: "MS-7D25" },
+      { label: "Case", value: "NZXT H5 Flow" }
     ],
     cpu: [
       { label: "CPU Manufacturer", value: "Intel" },
@@ -283,7 +284,8 @@ const CARD_TEMPLATES: Record<string, any> = {
     { label: "MB Manufacturer", value: "" },
     { label: "MB Model", value: "" },
     { label: "MB Serial Number", value: "" },
-    { label: "BIOS Serial Number", value: "" }
+    { label: "BIOS Serial Number", value: "" },
+    { label: "Case", value: "" }
   ],
   "CPU": [
     { label: "CPU Manufacturer", value: "" },
