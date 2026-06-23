@@ -168,8 +168,8 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
   return {
     assets: [
       { label: "Asset Tag", value: "AST-4412" },
-      { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-      { label: "Date Recorded", value: "2026-06-22" }
+      { label: "Username", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
+      { label: "Date Recorded", value: "2026-06-22 10:00:00" }
     ],
     os: [
       [
@@ -269,7 +269,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
 const CARD_TEMPLATES: Record<string, any> = {
   "Asset Details": [
     { label: "Asset Tag", value: "" },
-    { label: "Hostname", value: "" },
+    { label: "Username", value: "" },
     { label: "Date Recorded", value: "" }
   ],
   "Operating System": [
@@ -602,9 +602,17 @@ export default function Inventory({
       }
     }
 
+    let finalFormattedItems = formattedItems;
+    if (categoryKey === "assets" && Array.isArray(formattedItems)) {
+      const existingUuid = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Asset UUID");
+      if (existingUuid) {
+        finalFormattedItems = [existingUuid, ...formattedItems];
+      }
+    }
+
     const updatedSpecs = {
       ...currentMemberSpecs,
-      [categoryKey]: formattedItems
+      [categoryKey]: finalFormattedItems
     };
 
     const newWorkstationSpecs = {
@@ -633,24 +641,38 @@ export default function Inventory({
 
     if (!categoryKey) return;
 
-    const template = CARD_TEMPLATES[cardTitle] || [];
+    let template = CARD_TEMPLATES[cardTitle] || [];
+    
+    // For "assets", preserve existing UUID if there is one
+    if (categoryKey === "assets" && currentSpecs.assets) {
+      const existingUuid = currentSpecs.assets.find((item: any) => item.label === "Asset UUID");
+      if (existingUuid) {
+        template = [existingUuid, ...template];
+      }
+    }
 
-    const updatedSpecs = {
-      ...currentSpecs,
-      [categoryKey]: template
-    };
+    // Auto-populate Date Recorded if empty
+    if (cardTitle === "Asset Details") {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      const formattedNow = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 
-    const newWorkstationSpecs = {
-      ...workstationSpecs,
-      [currentMemberKey]: updatedSpecs
-    };
-
-    setWorkstationSpecs(newWorkstationSpecs);
-    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
-    saveSpecsToDb(updatedSpecs);
+      template = template.map((item: any) => {
+        if (item.label === "Date Recorded" && !item.value) {
+          return { ...item, value: formattedNow };
+        }
+        return item;
+      });
+    }
 
     setEditingCardTitle(cardTitle);
-    setEditingCardItems(JSON.parse(JSON.stringify(template)));
+    const formItems = template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+    setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
   };
 
   const handleDeleteCard = (cardTitle: string) => {
@@ -772,9 +794,22 @@ export default function Inventory({
                     value: String(subItem.value || "")
                   }));
                 }
+
+                let val = String(item.value || "");
+                if (cardTitle === "Asset Details" && item.label === "Date Recorded" && !val) {
+                  const now = new Date();
+                  const year = now.getFullYear();
+                  const month = String(now.getMonth() + 1).padStart(2, '0');
+                  const day = String(now.getDate()).padStart(2, '0');
+                  const hours = String(now.getHours()).padStart(2, '0');
+                  const minutes = String(now.getMinutes()).padStart(2, '0');
+                  const seconds = String(now.getSeconds()).padStart(2, '0');
+                  val = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                }
+
                 return {
                   label: item.label,
-                  value: String(item.value || "")
+                  value: val
                 };
               }));
             };
@@ -792,7 +827,15 @@ export default function Inventory({
               { title: "Peripherals", key: "peripherals" }
             ];
 
-            const hiddenCategories = ALL_CATEGORIES.filter(cat => !specs[cat.key] || specs[cat.key].length === 0);
+             const hiddenCategories = ALL_CATEGORIES.filter(cat => {
+               const val = specs[cat.key];
+               if (!val || val.length === 0) return true;
+               if (cat.key === "assets") {
+                 const displayable = (val || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+                 return !displayable.some((item: any) => item.value !== "");
+               }
+               return false;
+             });
 
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1499,11 +1542,30 @@ export default function Inventory({
                       {item.label}
                     </label>
                     <input
-                      type="text"
-                      value={item.value}
+                      type={item.label === "Date Recorded" ? "datetime-local" : "text"}
+                      value={(() => {
+                        if (item.label === "Date Recorded" && item.value) {
+                          const clean = item.value.replace(" ", "T");
+                          if (clean.includes("T")) {
+                            const parts = clean.split(":");
+                            if (parts.length >= 2) {
+                              return `${parts[0]}:${parts[1]}`;
+                            }
+                          }
+                          return clean;
+                        }
+                        return item.value;
+                      })()}
                       onChange={(e) => {
                         const updatedItems = [...editingCardItems];
-                        updatedItems[idx].value = e.target.value;
+                        let val = e.target.value;
+                        if (item.label === "Date Recorded" && val) {
+                          val = val.replace("T", " ");
+                          if (val.split(":").length === 2) {
+                            val += ":00";
+                          }
+                        }
+                        updatedItems[idx].value = val;
                         setEditingCardItems(updatedItems);
                       }}
                       style={{

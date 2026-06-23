@@ -51,7 +51,7 @@ class Asset(models.Model):
         related_name='assets'
     )
     omada_username = models.CharField(max_length=255, null=True, blank=True)
-    date_recorded = models.DateField(null=True, blank=True)
+    date_recorded = models.DateTimeField(null=True, blank=True)
     os_version = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:

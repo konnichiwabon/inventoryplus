@@ -92,8 +92,8 @@ def user_workstation_specs(request, user_id):
         if not is_stub:
             assets_data.extend([
                 {"label": "Asset Tag", "value": asset.asset_tag or ""},
-                {"label": "Hostname", "value": asset.hostname or ""},
-                {"label": "Date Recorded", "value": asset.date_recorded.isoformat() if asset.date_recorded else ""}
+                {"label": "Username", "value": asset.hostname or ""},
+                {"label": "Date Recorded", "value": asset.date_recorded.strftime("%Y-%m-%d %H:%M:%S") if asset.date_recorded else ""}
             ])
 
 
@@ -230,7 +230,7 @@ def user_workstation_specs(request, user_id):
             assets_list = body.get("assets", [])
             asset_uuid_str = get_val(assets_list, "Asset UUID") if assets_list else ""
             asset_tag = get_val(assets_list, "Asset Tag") if assets_list else ""
-            hostname = get_val(assets_list, "Hostname") if assets_list else ""
+            hostname = get_val(assets_list, "Username") if assets_list else ""
             date_recorded_str = get_val(assets_list, "Date Recorded") if assets_list else ""
 
             # Try to lookup asset using its Asset UUID first
@@ -270,9 +270,19 @@ def user_workstation_specs(request, user_id):
             if assets_list:
                 if date_recorded_str:
                     from datetime import datetime
+                    from django.utils.dateparse import parse_datetime
                     try:
-                        asset.date_recorded = datetime.strptime(date_recorded_str, "%Y-%m-%d").date()
-                        asset.save()
+                        parsed_dt = parse_datetime(date_recorded_str)
+                        if not parsed_dt:
+                            for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M", "%Y-%m-%d"):
+                                try:
+                                    parsed_dt = datetime.strptime(date_recorded_str.strip(), fmt)
+                                    break
+                                except ValueError:
+                                    continue
+                        if parsed_dt:
+                            asset.date_recorded = parsed_dt
+                            asset.save()
                     except Exception:
                         pass
                 else:
