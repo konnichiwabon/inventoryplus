@@ -34,7 +34,7 @@ class UserProfile(models.Model):
 class Asset(models.Model):
     asset_id = models.AutoField(primary_key=True)
     asset_uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    asset_tag = models.CharField(max_length=255, unique=True)
+    asset_tag = models.CharField(max_length=255, unique=True, null=True, blank=True)
     hostname = models.CharField(max_length=255, null=True, blank=True)
     department = models.ForeignKey(
         Department,
