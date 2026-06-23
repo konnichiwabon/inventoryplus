@@ -360,6 +360,11 @@ export default function Inventory({
   const [workstationSpecs, setWorkstationSpecs] = useState<{ [key: string]: any }>({});
   const [editingCardTitle, setEditingCardTitle] = useState<string | null>(null);
   const [editingCardItems, setEditingCardItems] = useState<any[]>([]);
+  const [addCardDropdownOpen, setAddCardDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    setAddCardDropdownOpen(false);
+  }, [selectedMemberIndex, selectedDepartment]);
 
   useEffect(() => {
     const saved = localStorage.getItem("inventoryplus_workstation_specs");
@@ -720,32 +725,119 @@ export default function Inventory({
                     {name}'s Workstation Diagnostics
                   </h3>
                   {hiddenCategories.length > 0 && (
-                    <select
-                      onChange={(e) => {
-                        const selectedTitle = e.target.value;
-                        if (!selectedTitle) return;
-                        handleAddSpecCard(selectedTitle, specs);
-                        e.target.value = "";
-                      }}
-                      style={{
-                        padding: "8px 12px",
-                        borderRadius: "8px",
-                        border: "1px solid var(--border)",
-                        backgroundColor: "var(--code-bg)",
-                        color: "var(--text-h)",
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        cursor: "pointer",
-                        outline: "none"
-                      }}
-                    >
-                      <option value="">+ Add Hardware Specification...</option>
-                      {hiddenCategories.map(cat => (
-                        <option key={cat.key} value={cat.title}>
-                          {cat.title}
-                        </option>
-                      ))}
-                    </select>
+                    <div style={{ position: "relative" }}>
+                      <button
+                        onClick={() => setAddCardDropdownOpen(!addCardDropdownOpen)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "8px",
+                          padding: "8px 16px",
+                          borderRadius: "10px",
+                          border: "1px solid var(--border)",
+                          backgroundColor: "var(--code-bg)",
+                          color: "var(--text-h)",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+                          outline: "none"
+                        }}
+                        onMouseOver={(e) => {
+                          e.currentTarget.style.borderColor = "var(--text-muted)";
+                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.04)";
+                        }}
+                        onMouseOut={(e) => {
+                          e.currentTarget.style.borderColor = "var(--border)";
+                          e.currentTarget.style.backgroundColor = "var(--code-bg)";
+                        }}
+                      >
+                        <span>+ Add Hardware Specification</span>
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{
+                            transform: addCardDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            transition: "transform 0.2s",
+                            stroke: "currentColor",
+                            strokeWidth: "2",
+                            strokeLinecap: "round"
+                          }}
+                        >
+                          <path d="M2 4L6 8L10 4" />
+                        </svg>
+                      </button>
+
+                      {addCardDropdownOpen && (
+                        <>
+                          <div
+                            onClick={() => setAddCardDropdownOpen(false)}
+                            style={{
+                              position: "fixed",
+                              inset: 0,
+                              zIndex: 998,
+                              cursor: "default"
+                            }}
+                          />
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "calc(100% + 6px)",
+                              right: 0,
+                              zIndex: 999,
+                              minWidth: "220px",
+                              backgroundColor: "var(--bg)",
+                              border: "1px solid var(--border)",
+                              borderRadius: "12px",
+                              boxShadow: "0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.08)",
+                              padding: "6px",
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "2px"
+                            }}
+                          >
+                            {hiddenCategories.map(cat => (
+                              <button
+                                key={cat.key}
+                                onClick={() => {
+                                  handleAddSpecCard(cat.title, specs);
+                                  setAddCardDropdownOpen(false);
+                                }}
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  width: "100%",
+                                  padding: "8px 12px",
+                                  border: "none",
+                                  backgroundColor: "transparent",
+                                  color: "var(--text-h)",
+                                  fontSize: "13px",
+                                  fontWeight: 500,
+                                  textAlign: "left",
+                                  borderRadius: "8px",
+                                  cursor: "pointer",
+                                  transition: "all 0.15s"
+                                }}
+                                onMouseOver={(e) => {
+                                  e.currentTarget.style.backgroundColor = "#7F56D9";
+                                  e.currentTarget.style.color = "#ffffff";
+                                }}
+                                onMouseOut={(e) => {
+                                  e.currentTarget.style.backgroundColor = "transparent";
+                                  e.currentTarget.style.color = "var(--text-h)";
+                                }}
+                              >
+                                {cat.title}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
                   )}
                 </div>
                 <div style={{
