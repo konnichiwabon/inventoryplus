@@ -19,7 +19,8 @@
 
 
 
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useRef, useCallback, useMemo, useState } from 'react';
+import { useTheme } from './ThemeContext';
 
 const DEFAULT_INNER_GRADIENT = 'linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)';
 
@@ -35,6 +36,39 @@ const clamp = (v: number, min = 0, max = 100): number => Math.min(Math.max(v, mi
 const round = (v: number, precision = 3): number => parseFloat(v.toFixed(precision));
 const adjust = (v: number, fMin: number, fMax: number, tMin: number, tMax: number): number =>
   round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
+
+const getDepartmentIcon = (name: string) => {
+  const n = name.toLowerCase();
+  if (n.includes('eng') || n.includes('dev') || n.includes('tech') || n.includes('code')) {
+    return (
+      <svg className="w-12 h-12 text-[#A78BFA]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(167, 139, 250, 0.5))' }}>
+        <polyline points="16 18 22 12 16 6"></polyline>
+        <polyline points="8 6 2 12 8 18"></polyline>
+      </svg>
+    );
+  }
+  if (n.includes('mark') || n.includes('sale') || n.includes('prom') || n.includes('ads')) {
+    return (
+      <svg className="w-12 h-12 text-[#F43F5E]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(244, 63, 94, 0.5))' }}>
+        <path d="M23 6l-9.5 9.5-5-5L1 18"></path>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+    );
+  }
+  if (n.includes('fin') || n.includes('pay') || n.includes('bill') || n.includes('mon')) {
+    return (
+      <svg className="w-12 h-12 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(16, 185, 129, 0.5))' }}>
+        <line x1="12" y1="1" x2="12" y2="23"></line>
+        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+      </svg>
+    );
+  }
+  return (
+    <svg className="w-12 h-12 text-[#3B82F6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ filter: 'drop-shadow(0 0 8px rgba(59, 130, 246, 0.5))' }}>
+      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+    </svg>
+  );
+};
 
 // Inject keyframes once
 const KEYFRAMES_ID = 'pc-keyframes';
@@ -104,6 +138,25 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   onContactClick,
   onCardClick
 }) => {
+  const { theme } = useTheme();
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      if (theme === 'system') {
+        setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      } else {
+        setIsDark(theme === 'dark');
+      }
+    };
+    checkTheme();
+    if (theme === 'system') {
+      const media = window.matchMedia('(prefers-color-scheme: dark)');
+      media.addEventListener('change', checkTheme);
+      return () => media.removeEventListener('change', checkTheme);
+    }
+  }, [theme]);
+
   const wrapRef = useRef<HTMLDivElement>(null);
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -365,8 +418,12 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     () => ({
       '--icon': iconUrl ? `url(${iconUrl})` : 'none',
       '--grain': grainUrl ? `url(${grainUrl})` : 'none',
-      '--inner-gradient': innerGradient ?? DEFAULT_INNER_GRADIENT,
-      '--behind-glow-color': behindGlowColor ?? 'rgba(125, 190, 255, 0.67)',
+      '--inner-gradient': isDark 
+        ? (innerGradient ?? DEFAULT_INNER_GRADIENT)
+        : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(220, 235, 255, 0.75) 100%)',
+      '--behind-glow-color': isDark
+        ? (behindGlowColor ?? 'rgba(125, 190, 255, 0.67)')
+        : 'rgba(59, 130, 246, 0.15)',
       '--behind-glow-size': behindGlowSize ?? '50%',
       '--pointer-x': '50%',
       '--pointer-y': '50%',
@@ -392,7 +449,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       '--sunpillar-clr-5': 'var(--sunpillar-5)',
       '--sunpillar-clr-6': 'var(--sunpillar-6)'
     }),
-    [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize, cardRadius]
+    [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize, cardRadius, isDark]
   );
 
   const handleContactClick = useCallback((e: React.MouseEvent): void => {
@@ -491,11 +548,12 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             aspectRatio: '0.718',
             borderRadius: cardRadius,
             backgroundBlendMode: 'color-dodge, normal, normal, normal',
-            boxShadow:
-              'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px',
+            boxShadow: isDark
+              ? 'rgba(0, 0, 0, 0.8) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px'
+              : 'rgba(0, 0, 0, 0.08) calc((var(--pointer-from-left) * 10px) - 3px) calc((var(--pointer-from-top) * 20px) - 6px) 20px -5px, 0 4px 6px -1px rgba(0, 0, 0, 0.05)',
             transition: 'transform 1s ease, height 0.4s ease, width 0.4s ease, max-height 0.4s ease',
             transform: 'translateZ(0) rotateX(0deg) rotateY(0deg)',
-            background: 'rgba(0, 0, 0, 0.9)',
+            background: isDark ? 'rgba(10, 20, 16, 0.4)' : 'rgba(255, 255, 255, 0.55)',
             backfaceVisibility: 'hidden'
           }}
           onMouseEnter={e => {
@@ -513,14 +571,14 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             className="absolute inset-0"
             style={{
               backgroundImage: 'var(--inner-gradient)',
-              backgroundColor: 'rgba(0, 0, 0, 0.9)',
+              backgroundColor: isDark ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.95)',
               borderRadius: cardRadius,
               display: 'grid',
               gridArea: '1 / -1'
             }}
           >
             {/* Shine layer */}
-            <div style={shineStyle} />
+            {isDark && <div style={shineStyle} />}
 
             {/* Glare layer */}
             <div style={glareStyle} />
@@ -607,57 +665,105 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             </div>
 
             {/* Details content */}
-            <div
-              className="max-h-full overflow-hidden text-center relative z-[5]"
-              style={{
-                transform:
-                  'translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px)',
-                mixBlendMode: 'luminosity',
-                gridArea: '1 / -1',
-                borderRadius: cardRadius,
-                pointerEvents: 'none'
-              }}
-            >
-              <div className="w-full absolute flex flex-col" style={{ top: '3em', display: 'flex', gridArea: 'auto' }}>
-                <h3
-                  className="font-semibold m-0"
-                  style={{
-                    fontSize: 'min(5svh, 3em)',
-                    backgroundImage: 'linear-gradient(to bottom, #fff, #6f6fbe)',
-                    backgroundSize: '1em 1.5em',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    display: 'block',
-                    gridArea: 'auto',
-                    borderRadius: '0',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  {name}
-                </h3>
-                <p
-                  className="font-semibold whitespace-nowrap mx-auto w-min"
-                  style={{
-                    position: 'relative',
-                    top: '-12px',
-                    fontSize: '16px',
-                    margin: '0 auto',
-                    backgroundImage: 'linear-gradient(to bottom, #fff, #4a4ac0)',
-                    backgroundSize: '1em 1.5em',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    display: 'block',
-                    gridArea: 'auto',
-                    borderRadius: '0',
-                    pointerEvents: 'auto'
-                  }}
-                >
-                  {title}
-                </p>
+            {!showUserInfo ? (
+              <div
+                className="absolute inset-0 flex flex-col justify-between p-6 text-left z-[5]"
+                style={{
+                  transform:
+                    'translate3d(calc(var(--pointer-from-left) * -10px + 5px), calc(var(--pointer-from-top) * -10px + 5px), 2px)',
+                  borderRadius: cardRadius,
+                  pointerEvents: 'none'
+                }}
+              >
+                {/* Top Section: Department Indicator */}
+                <div className="flex justify-between items-center w-full">
+                  <span className={`text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full backdrop-blur-sm transition-colors duration-300 ${isDark ? 'text-purple-300 bg-purple-500/10 border border-purple-500/20' : 'text-purple-700 bg-purple-50 border border-purple-200'}`}>
+                    Department
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-[10px] font-semibold tracking-wide transition-colors duration-300 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`}>Connected</span>
+                    <div className={`w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse transition-all duration-300 ${isDark ? 'shadow-[0_0_8px_#34d399]' : 'shadow-[0_0_6px_#059669]'}`} />
+                  </div>
+                </div>
+
+                {/* Middle Section: Modern Neon Icon & Name */}
+                <div className="flex flex-col items-center justify-center my-auto gap-4 w-full">
+                  <div className={`p-4 rounded-2xl border transition-all duration-300 group-hover:scale-110 ${isDark ? 'bg-white/[0.03] border-white/10 backdrop-blur-md shadow-2xl' : 'bg-black/[0.02] border-black/5 shadow-inner'}`}>
+                    {getDepartmentIcon(name || "")}
+                  </div>
+                  <div className="text-center">
+                    <h3 className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-white drop-shadow-md' : 'text-slate-800'}`}>
+                      {name}
+                    </h3>
+                  </div>
+                </div>
+
+                {/* Bottom Section: Translucent Stats Badge */}
+                <div className={`w-full border rounded-xl p-3.5 backdrop-blur-md flex items-center justify-around text-center transition-colors duration-300 ${isDark ? 'bg-black/40 border-white/5' : 'bg-white/70 border-black/5 shadow-sm'}`}>
+                  <div>
+                    <div className={`text-lg font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-white' : 'text-slate-800'}`}>7</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Members</div>
+                  </div>
+                  <div className={`w-px h-8 transition-colors duration-300 ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
+                  <div>
+                    <div className={`text-lg font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-purple-400' : 'text-purple-600'}`}>12</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Devices</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div
+                className="max-h-full overflow-hidden text-center relative z-[5]"
+                style={{
+                  transform:
+                    'translate3d(calc(var(--pointer-from-left) * -6px + 3px), calc(var(--pointer-from-top) * -6px + 3px), 0.1px)',
+                  mixBlendMode: 'luminosity',
+                  gridArea: '1 / -1',
+                  borderRadius: cardRadius,
+                  pointerEvents: 'none'
+                }}
+              >
+                <div className="w-full absolute flex flex-col" style={{ top: '3em', display: 'flex', gridArea: 'auto' }}>
+                  <h3
+                    className="font-semibold m-0"
+                    style={{
+                      fontSize: 'min(5svh, 3em)',
+                      backgroundImage: 'linear-gradient(to bottom, #fff, #6f6fbe)',
+                      backgroundSize: '1em 1.5em',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      display: 'block',
+                      gridArea: 'auto',
+                      borderRadius: '0',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    {name}
+                  </h3>
+                  <p
+                    className="font-semibold whitespace-nowrap mx-auto w-min"
+                    style={{
+                      position: 'relative',
+                      top: '-12px',
+                      fontSize: '16px',
+                      margin: '0 auto',
+                      backgroundImage: 'linear-gradient(to bottom, #fff, #4a4ac0)',
+                      backgroundSize: '1em 1.5em',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                      WebkitBackgroundClip: 'text',
+                      display: 'block',
+                      gridArea: 'auto',
+                      borderRadius: '0',
+                      pointerEvents: 'auto'
+                    }}
+                  >
+                    {title}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </div>
