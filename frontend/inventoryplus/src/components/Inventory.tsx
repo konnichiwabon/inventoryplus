@@ -88,7 +88,6 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
   if (mName.includes("Sarah Connor")) {
     return {
       assets: [
-        { label: "Asset UUID", value: "8f12b3c4-e567-8901-abcd-ef1234567890" },
         { label: "Asset Tag", value: "AST-9821" },
         { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
         { label: "Omada Username", value: "omada_admin" },
@@ -166,7 +165,6 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
 
   return {
     assets: [
-      { label: "Asset UUID", value: "6c23a4b5-d789-0123-bcde-fa3456789012" },
       { label: "Asset Tag", value: "AST-4412" },
       { label: "Hostname", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
       { label: "Omada Username", value: "omada_admin" },
@@ -543,8 +541,8 @@ export default function Inventory({
                     title="Asset & OS"
                     icon={<MonitorIcon />}
                     variant="green"
-                    items={specs.assets || []}
-                    onEdit={() => handleCardClick("Asset & OS", specs.assets || [])}
+                    items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID")}
+                    onEdit={() => handleCardClick("Asset & OS", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID"))}
                   />
 
                   <InfoCard
