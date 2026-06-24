@@ -418,7 +418,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     () => ({
       '--icon': iconUrl ? `url(${iconUrl})` : 'none',
       '--grain': grainUrl ? `url(${grainUrl})` : 'none',
-      '--inner-gradient': isDark 
+      '--inner-gradient': isDark
         ? (innerGradient ?? DEFAULT_INNER_GRADIENT)
         : 'linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(220, 235, 255, 0.75) 100%)',
       '--behind-glow-color': isDark
@@ -702,7 +702,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                 <div className={`w-full border rounded-xl p-3.5 backdrop-blur-md flex items-center justify-around text-center transition-colors duration-300 ${isDark ? 'bg-black/40 border-white/5' : 'bg-white/70 border-black/5 shadow-sm'}`}>
                   <div>
                     <div className={`text-lg font-bold tracking-tight transition-colors duration-300 ${isDark ? 'text-white' : 'text-slate-800'}`}>7</div>
-                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Members</div>
+                    <div className={`text-[10px] font-semibold uppercase tracking-wider transition-colors duration-300 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>HAHA</div>
                   </div>
                   <div className={`w-px h-8 transition-colors duration-300 ${isDark ? 'bg-white/10' : 'bg-black/10'}`} />
                   <div>
