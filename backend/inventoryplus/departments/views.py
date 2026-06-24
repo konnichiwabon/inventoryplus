@@ -59,9 +59,18 @@ def department_users_list(request, dept_name):
             if not username:
                 return JsonResponse({'error': 'Username is required'}, status=400)
 
+            # Prevent duplicate users within the same department
+            existing_user = UserProfile.objects.filter(username__iexact=username.strip(), department=dept).first()
+            if existing_user:
+                return JsonResponse({
+                    'id': existing_user.user_id,
+                    'username': existing_user.username,
+                    'email': existing_user.email
+                }, status=200)
+
             user = UserProfile.objects.create(
-                username=username,
-                email=email,
+                username=username.strip(),
+                email=email.strip() if email else None,
                 department=dept
             )
             return JsonResponse({
@@ -460,43 +469,7 @@ def department_list(request):
 
     return JsonResponse({'error': 'Method not allowed'}, status=405)
 
-@csrf_exempt
-def department_users_list(request, dept_name):
-    dept = get_object_or_404(Department, department_name__iexact=dept_name)
 
-    if request.method == 'GET':
-        users = dept.users.all().order_by('user_id')
-        data = []
-        for u in users:
-            data.append({
-                'id': u.user_id,
-                'username': u.username,
-                'email': u.email,
-            })
-        return JsonResponse(data, safe=False)
-
-    elif request.method == 'POST':
-        try:
-            body = json.loads(request.body)
-            username = body.get('username')
-            email = body.get('email')
-            if not username:
-                return JsonResponse({'error': 'Username is required'}, status=400)
-
-            user = UserProfile.objects.create(
-                username=username,
-                email=email,
-                department=dept
-            )
-            return JsonResponse({
-                'id': user.user_id,
-                'username': user.username,
-                'email': user.email
-            }, status=201)
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 @csrf_exempt
 def delete_user(request, user_id):

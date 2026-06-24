@@ -343,6 +343,46 @@ const CARD_TEMPLATES: Record<string, any> = {
   ]
 };
 
+const mergeWithTemplate = (cardTitle: string, currentItems: any[]): any[] => {
+  const template = CARD_TEMPLATES[cardTitle];
+  if (!template) return currentItems;
+
+  const isMulti = ["os", "ram", "storage", "monitor", "peripherals"].includes(
+    cardTitle === "Operating System" ? "os" :
+    cardTitle === "RAM" ? "ram" :
+    cardTitle === "Storage" ? "storage" :
+    cardTitle === "GPU" ? "gpu" :
+    cardTitle === "Monitor" ? "monitor" :
+    cardTitle === "Peripherals" ? "peripherals" : ""
+  );
+
+  if (isMulti) {
+    if (!Array.isArray(currentItems) || currentItems.length === 0) {
+      return [template[0] || template];
+    }
+    return currentItems.map((instance: any) => {
+      const flatInstance = Array.isArray(instance) ? instance : [instance];
+      const templateFlat = Array.isArray(template[0]) ? template[0] : template;
+      return templateFlat.map((tempItem: any) => {
+        const found = flatInstance.find((item: any) => item && item.label === tempItem.label);
+        return {
+          label: tempItem.label,
+          value: found ? String(found.value || "") : ""
+        };
+      });
+    });
+  } else {
+    const flatItems = Array.isArray(currentItems) ? currentItems : [];
+    return template.map((tempItem: any) => {
+      const found = flatItems.find((item: any) => item && item.label === tempItem.label);
+      return {
+        label: tempItem.label,
+        value: found ? String(found.value || "") : ""
+      };
+    });
+  }
+};
+
 interface InventoryProps {
   showRightSidebar: boolean;
   setShowRightSidebar: (show: boolean) => void;
@@ -429,6 +469,7 @@ export default function Inventory({
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [isSubmittingMember, setIsSubmittingMember] = useState(false);
 
   const fetchMembers = async (deptName: string) => {
     try {
@@ -452,8 +493,9 @@ export default function Inventory({
 
   const handleAddMemberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMemberName.trim() || !selectedDepartment) return;
+    if (!newMemberName.trim() || !selectedDepartment || isSubmittingMember) return;
 
+    setIsSubmittingMember(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
         method: "POST",
@@ -471,6 +513,8 @@ export default function Inventory({
       }
     } catch (err) {
       console.error("Error adding team member:", err);
+    } finally {
+      setIsSubmittingMember(false);
     }
   };
 
@@ -791,7 +835,8 @@ export default function Inventory({
 
             const handleCardClick = (cardTitle: string, currentItems: any[]) => {
               setEditingCardTitle(cardTitle);
-              setEditingCardItems(currentItems.map(item => {
+              const merged = mergeWithTemplate(cardTitle, currentItems);
+              setEditingCardItems(merged.map(item => {
                 if (Array.isArray(item)) {
                   return item.map(subItem => ({
                     label: subItem.label,
@@ -1360,21 +1405,26 @@ export default function Inventory({
                 </button>
                 <button
                   type="submit"
+                  disabled={isSubmittingMember}
                   style={{
                     padding: "10px 16px",
-                    backgroundColor: "#7F56D9",
+                    backgroundColor: isSubmittingMember ? "#bfa8e6" : "#7F56D9",
                     border: "none",
                     borderRadius: "8px",
                     fontSize: "14px",
                     fontWeight: 600,
                     color: "#fff",
-                    cursor: "pointer",
+                    cursor: isSubmittingMember ? "not-allowed" : "pointer",
                     boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                  onMouseOver={(e) => {
+                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#6941C6';
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#7F56D9';
+                  }}
                 >
-                  Save
+                  {isSubmittingMember ? "Saving..." : "Save"}
                 </button>
               </div>
             </form>
