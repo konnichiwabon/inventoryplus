@@ -1,24 +1,42 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SidebarNavigationSlimDemo } from './components/sidebar';
 import Inventory from './components/Inventory';
 import './App.css';
 
 function App() {
-  const [activeIndex, setActiveIndex] = useState(0); // 0 = Home, 1 = Inventory
-  const [activeSub, setActiveSub] = useState("Overview");
-  const [showRightSidebar, setShowRightSidebar] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(() => {
+    const saved = localStorage.getItem("inventoryplus_active_index");
+    return saved !== null ? Number(saved) : 0;
+  });
+  const [activeSub, setActiveSub] = useState(() => {
+    const saved = localStorage.getItem("inventoryplus_active_sub");
+    return saved !== null ? saved : "Overview";
+  });
+  const [showRightSidebar, setShowRightSidebar] = useState(() => {
+    return localStorage.getItem("inventoryplus_show_right_sidebar") === "true";
+  });
   const [resetKey, setResetKey] = useState(0);
 
   const handleItemSelect = (index: number) => {
     setActiveIndex(index);
-    if (index === 1) { // Inventory rail tab
-      setShowRightSidebar(false);
-      setResetKey(prev => prev + 1);
-    }
+    localStorage.setItem("inventoryplus_active_index", String(index));
+    // Clear selection if explicitly clicking sidebar tab
+    localStorage.removeItem("inventoryplus_selected_department");
+    localStorage.removeItem("inventoryplus_selected_member_index");
+    localStorage.removeItem("inventoryplus_selected_member_username");
+    localStorage.removeItem("inventoryplus_show_right_sidebar");
+    setShowRightSidebar(false);
+    setResetKey(prev => prev + 1);
   };
 
   const handleSubSelect = (label: string) => {
     setActiveSub(label);
+    localStorage.setItem("inventoryplus_active_sub", label);
+    // Clear selection if explicitly clicking sidebar sub-select
+    localStorage.removeItem("inventoryplus_selected_department");
+    localStorage.removeItem("inventoryplus_selected_member_index");
+    localStorage.removeItem("inventoryplus_selected_member_username");
+    localStorage.removeItem("inventoryplus_show_right_sidebar");
     if (label === "Overview" || label === "Products" || label === "Inventory") {
       setShowRightSidebar(false);
       setResetKey(prev => prev + 1);
@@ -26,6 +44,10 @@ function App() {
   };
 
   const isInventoryView = activeIndex === 1 || (activeIndex === 0 && (activeSub === "Overview" || activeSub === "Products" || activeSub === "Inventory"));
+
+  useEffect(() => {
+    localStorage.setItem("inventoryplus_show_right_sidebar", String(showRightSidebar));
+  }, [showRightSidebar]);
 
   return (
     <div className="app-layout">

@@ -394,8 +394,13 @@ export default function Inventory({
   setShowRightSidebar,
   onBackToOverview,
 }: InventoryProps) {
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(null);
-  const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(-1);
+  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(() => {
+    return localStorage.getItem("inventoryplus_selected_department");
+  });
+  const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(() => {
+    const saved = localStorage.getItem("inventoryplus_selected_member_index");
+    return saved !== null ? Number(saved) : -1;
+  });
   const [workstationSpecs, setWorkstationSpecs] = useState<{ [key: string]: any }>({});
   const [editingCardTitle, setEditingCardTitle] = useState<string | null>(null);
   const [editingCardItems, setEditingCardItems] = useState<any[]>([]);
@@ -471,12 +476,38 @@ export default function Inventory({
   const [newMemberEmail, setNewMemberEmail] = useState("");
   const [isSubmittingMember, setIsSubmittingMember] = useState(false);
 
+  useEffect(() => {
+    if (selectedDepartment) {
+      localStorage.setItem("inventoryplus_selected_department", selectedDepartment);
+    } else {
+      localStorage.removeItem("inventoryplus_selected_department");
+    }
+  }, [selectedDepartment]);
+
+  useEffect(() => {
+    localStorage.setItem("inventoryplus_selected_member_index", String(selectedMemberIndex));
+    if (selectedMemberIndex !== -1 && members && members[selectedMemberIndex]) {
+      localStorage.setItem("inventoryplus_selected_member_username", members[selectedMemberIndex].username);
+    } else if (selectedMemberIndex === -1) {
+      localStorage.removeItem("inventoryplus_selected_member_username");
+    }
+  }, [selectedMemberIndex, members]);
+
   const fetchMembers = async (deptName: string) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(deptName)}/users/`);
       if (res.ok) {
         const data = await res.json();
         setMembers(data);
+        
+        // Restore selectedMemberIndex based on the saved username
+        const savedUsername = localStorage.getItem("inventoryplus_selected_member_username");
+        if (savedUsername) {
+          const idx = data.findIndex((m: any) => m.username === savedUsername);
+          if (idx !== -1) {
+            setSelectedMemberIndex(idx);
+          }
+        }
       }
     } catch (err) {
       console.error("Error fetching department users:", err);
