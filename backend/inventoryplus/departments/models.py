@@ -152,7 +152,7 @@ class Network(models.Model):
         related_name='networks'
     )
     mac_address = models.CharField(max_length=255, null=True, blank=True)
-    dhcp_enabled = models.BooleanField(null=True, blank=True)
+    dhcp_enabled = models.CharField(max_length=255, null=True, blank=True)
     current_ip = models.CharField(max_length=255, null=True, blank=True)
     port_number = models.CharField(max_length=255, null=True, blank=True)
     vlan_id = models.CharField(max_length=255, null=True, blank=True)
