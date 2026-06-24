@@ -181,7 +181,7 @@ def user_workstation_specs(request, user_id):
             net_data = [
                 {"label": "Current IP", "value": net.current_ip or ""},
                 {"label": "MAC Address", "value": net.mac_address or ""},
-                {"label": "DHCP Enabled", "value": "true" if net.dhcp_enabled else "false"},
+                {"label": "DHCP Enabled", "value": "Yes" if net.dhcp_enabled else "No"},
                 {"label": "Port Number", "value": net.port_number or ""},
                 {"label": "VLAN ID", "value": net.vlan_id or ""},
                 {"label": "Omada Username", "value": net.omada_username or ""}
@@ -410,7 +410,7 @@ def user_workstation_specs(request, user_id):
             net_list = body.get("network", [])
             if net_list:
                 dhcp_str = get_val(net_list, "DHCP Enabled").lower()
-                dhcp_enabled = True if dhcp_str == "true" else False
+                dhcp_enabled = dhcp_str in ["true", "yes"]
                 Network.objects.create(
                     asset=asset,
                     current_ip=get_val(net_list, "Current IP"),

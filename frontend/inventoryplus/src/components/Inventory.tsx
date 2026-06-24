@@ -135,7 +135,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       network: [
         { label: "Current IP", value: "192.168.1.105" },
         { label: "MAC Address", value: "00:11:22:33:44:55" },
-        { label: "DHCP Enabled", value: "true" },
+        { label: "DHCP Enabled", value: "Yes" },
         { label: "Port Number", value: "22" },
         { label: "VLAN ID", value: "10" },
         { label: "Omada Username", value: "net_admin" }
@@ -230,7 +230,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
     network: [
       { label: "Current IP", value: "192.168.1.142" },
       { label: "MAC Address", value: "e0:d5:5e:a1:b2:c3" },
-      { label: "DHCP Enabled", value: "true" },
+      { label: "DHCP Enabled", value: "Yes" },
       { label: "Port Number", value: "80" },
       { label: "VLAN ID", value: "20" },
       { label: "Omada Username", value: "net_admin" }
@@ -1590,52 +1590,81 @@ export default function Inventory({
                   );
                 }
 
-                return editingCardItems.map((item, idx) => (
-                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
-                      {item.label}
-                    </label>
-                    <input
-                      type={item.label === "Date Recorded" ? "datetime-local" : "text"}
-                      value={(() => {
-                        if (item.label === "Date Recorded" && item.value) {
-                          const clean = item.value.replace(" ", "T");
-                          if (clean.includes("T")) {
-                            const parts = clean.split(":");
-                            if (parts.length >= 2) {
-                              return `${parts[0]}:${parts[1]}`;
+                return editingCardItems.map((item, idx) => {
+                  const isDhcp = item.label === "DHCP Enabled";
+                  return (
+                    <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                        {item.label}
+                      </label>
+                      {isDhcp ? (
+                        <select
+                          value={item.value ? (String(item.value).toLowerCase() === "true" || String(item.value).toLowerCase() === "yes" ? "Yes" : "No") : ""}
+                          onChange={(e) => {
+                            const updatedItems = [...editingCardItems];
+                            updatedItems[idx].value = e.target.value;
+                            setEditingCardItems(updatedItems);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            border: "1px solid var(--border)",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                            backgroundColor: "var(--bg)",
+                            color: "var(--text-h)",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <option value="" disabled style={{ color: 'gray' }}>Select Option</option>
+                          <option value="Yes" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>Yes</option>
+                          <option value="No" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>No</option>
+                        </select>
+                      ) : (
+                        <input
+                          type={item.label === "Date Recorded" ? "datetime-local" : "text"}
+                          value={(() => {
+                            if (item.label === "Date Recorded" && item.value) {
+                              const clean = item.value.replace(" ", "T");
+                              if (clean.includes("T")) {
+                                const parts = clean.split(":");
+                                if (parts.length >= 2) {
+                                  return `${parts[0]}:${parts[1]}`;
+                                }
+                              }
+                              return clean;
                             }
-                          }
-                          return clean;
-                        }
-                        return item.value;
-                      })()}
-                      onChange={(e) => {
-                        const updatedItems = [...editingCardItems];
-                        let val = e.target.value;
-                        if (item.label === "Date Recorded" && val) {
-                          val = val.replace("T", " ");
-                          if (val.split(":").length === 2) {
-                            val += ":00";
-                          }
-                        }
-                        updatedItems[idx].value = val;
-                        setEditingCardItems(updatedItems);
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "8px 12px",
-                        border: "1px solid var(--border)",
-                        borderRadius: "8px",
-                        fontSize: "14px",
-                        backgroundColor: "transparent",
-                        color: "var(--text-h)",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                ));
+                            return item.value;
+                          })()}
+                          onChange={(e) => {
+                            const updatedItems = [...editingCardItems];
+                            let val = e.target.value;
+                            if (item.label === "Date Recorded" && val) {
+                              val = val.replace("T", " ");
+                              if (val.split(":").length === 2) {
+                                val += ":00";
+                              }
+                            }
+                            updatedItems[idx].value = val;
+                            setEditingCardItems(updatedItems);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            border: "1px solid var(--border)",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                            backgroundColor: "transparent",
+                            color: "var(--text-h)",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                });
               })()}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px", paddingBottom: "4px" }}>
                 {editingCardTitle ? (
