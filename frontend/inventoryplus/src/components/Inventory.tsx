@@ -135,7 +135,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
       network: [
         { label: "Current IP", value: "192.168.1.105" },
         { label: "MAC Address", value: "00:11:22:33:44:55" },
-        { label: "DHCP Enabled", value: "true" },
+        { label: "DHCP Enabled", value: "Yes" },
         { label: "Port Number", value: "22" },
         { label: "VLAN ID", value: "10" },
         { label: "Omada Username", value: "net_admin" }
@@ -230,7 +230,7 @@ const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
     network: [
       { label: "Current IP", value: "192.168.1.142" },
       { label: "MAC Address", value: "e0:d5:5e:a1:b2:c3" },
-      { label: "DHCP Enabled", value: "true" },
+      { label: "DHCP Enabled", value: "Yes" },
       { label: "Port Number", value: "80" },
       { label: "VLAN ID", value: "20" },
       { label: "Omada Username", value: "net_admin" }
@@ -343,6 +343,46 @@ const CARD_TEMPLATES: Record<string, any> = {
   ]
 };
 
+const mergeWithTemplate = (cardTitle: string, currentItems: any[]): any[] => {
+  const template = CARD_TEMPLATES[cardTitle];
+  if (!template) return currentItems;
+
+  const isMulti = ["os", "ram", "storage", "monitor", "peripherals"].includes(
+    cardTitle === "Operating System" ? "os" :
+    cardTitle === "RAM" ? "ram" :
+    cardTitle === "Storage" ? "storage" :
+    cardTitle === "GPU" ? "gpu" :
+    cardTitle === "Monitor" ? "monitor" :
+    cardTitle === "Peripherals" ? "peripherals" : ""
+  );
+
+  if (isMulti) {
+    if (!Array.isArray(currentItems) || currentItems.length === 0) {
+      return [template[0] || template];
+    }
+    return currentItems.map((instance: any) => {
+      const flatInstance = Array.isArray(instance) ? instance : [instance];
+      const templateFlat = Array.isArray(template[0]) ? template[0] : template;
+      return templateFlat.map((tempItem: any) => {
+        const found = flatInstance.find((item: any) => item && item.label === tempItem.label);
+        return {
+          label: tempItem.label,
+          value: found ? String(found.value || "") : ""
+        };
+      });
+    });
+  } else {
+    const flatItems = Array.isArray(currentItems) ? currentItems : [];
+    return template.map((tempItem: any) => {
+      const found = flatItems.find((item: any) => item && item.label === tempItem.label);
+      return {
+        label: tempItem.label,
+        value: found ? String(found.value || "") : ""
+      };
+    });
+  }
+};
+
 interface InventoryProps {
   showRightSidebar: boolean;
   setShowRightSidebar: (show: boolean) => void;
@@ -429,6 +469,7 @@ export default function Inventory({
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
+  const [isSubmittingMember, setIsSubmittingMember] = useState(false);
 
   const fetchMembers = async (deptName: string) => {
     try {
@@ -452,8 +493,9 @@ export default function Inventory({
 
   const handleAddMemberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMemberName.trim() || !selectedDepartment) return;
+    if (!newMemberName.trim() || !selectedDepartment || isSubmittingMember) return;
 
+    setIsSubmittingMember(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
         method: "POST",
@@ -471,6 +513,8 @@ export default function Inventory({
       }
     } catch (err) {
       console.error("Error adding team member:", err);
+    } finally {
+      setIsSubmittingMember(false);
     }
   };
 
@@ -605,9 +649,11 @@ export default function Inventory({
     let finalFormattedItems = formattedItems;
     if (categoryKey === "assets" && Array.isArray(formattedItems)) {
       const existingUuid = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Asset UUID");
-      if (existingUuid) {
-        finalFormattedItems = [existingUuid, ...formattedItems];
-      }
+      const existingOmada = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Omada Username");
+      const extra = [];
+      if (existingUuid) extra.push(existingUuid);
+      if (existingOmada) extra.push(existingOmada);
+      finalFormattedItems = [...extra, ...formattedItems.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")];
     }
 
     const updatedSpecs = {
@@ -643,12 +689,14 @@ export default function Inventory({
 
     let template = CARD_TEMPLATES[cardTitle] || [];
     
-    // For "assets", preserve existing UUID if there is one
+    // For "assets", preserve existing UUID and Omada Username if there is one
     if (categoryKey === "assets" && currentSpecs.assets) {
       const existingUuid = currentSpecs.assets.find((item: any) => item.label === "Asset UUID");
-      if (existingUuid) {
-        template = [existingUuid, ...template];
-      }
+      const existingOmada = currentSpecs.assets.find((item: any) => item.label === "Omada Username");
+      const extra = [];
+      if (existingUuid) extra.push(existingUuid);
+      if (existingOmada) extra.push(existingOmada);
+      template = [...extra, ...template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")];
     }
 
     // Auto-populate Date Recorded if empty
@@ -671,7 +719,7 @@ export default function Inventory({
     }
 
     setEditingCardTitle(cardTitle);
-    const formItems = template.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+    const formItems = template.filter((item: any) => item.label !== "Asset UUID");
     setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
   };
 
@@ -787,7 +835,8 @@ export default function Inventory({
 
             const handleCardClick = (cardTitle: string, currentItems: any[]) => {
               setEditingCardTitle(cardTitle);
-              setEditingCardItems(currentItems.map(item => {
+              const merged = mergeWithTemplate(cardTitle, currentItems);
+              setEditingCardItems(merged.map(item => {
                 if (Array.isArray(item)) {
                   return item.map(subItem => ({
                     label: subItem.label,
@@ -1356,21 +1405,26 @@ export default function Inventory({
                 </button>
                 <button
                   type="submit"
+                  disabled={isSubmittingMember}
                   style={{
                     padding: "10px 16px",
-                    backgroundColor: "#7F56D9",
+                    backgroundColor: isSubmittingMember ? "#bfa8e6" : "#7F56D9",
                     border: "none",
                     borderRadius: "8px",
                     fontSize: "14px",
                     fontWeight: 600,
                     color: "#fff",
-                    cursor: "pointer",
+                    cursor: isSubmittingMember ? "not-allowed" : "pointer",
                     boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
+                  onMouseOver={(e) => {
+                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#6941C6';
+                  }}
+                  onMouseOut={(e) => {
+                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#7F56D9';
+                  }}
                 >
-                  Save
+                  {isSubmittingMember ? "Saving..." : "Save"}
                 </button>
               </div>
             </form>
@@ -1536,52 +1590,81 @@ export default function Inventory({
                   );
                 }
 
-                return editingCardItems.map((item, idx) => (
-                  <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
-                      {item.label}
-                    </label>
-                    <input
-                      type={item.label === "Date Recorded" ? "datetime-local" : "text"}
-                      value={(() => {
-                        if (item.label === "Date Recorded" && item.value) {
-                          const clean = item.value.replace(" ", "T");
-                          if (clean.includes("T")) {
-                            const parts = clean.split(":");
-                            if (parts.length >= 2) {
-                              return `${parts[0]}:${parts[1]}`;
+                return editingCardItems.map((item, idx) => {
+                  const isDhcp = item.label === "DHCP Enabled";
+                  return (
+                    <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                      <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
+                        {item.label}
+                      </label>
+                      {isDhcp ? (
+                        <select
+                          value={item.value ? (String(item.value).toLowerCase() === "true" || String(item.value).toLowerCase() === "yes" ? "Yes" : "No") : ""}
+                          onChange={(e) => {
+                            const updatedItems = [...editingCardItems];
+                            updatedItems[idx].value = e.target.value;
+                            setEditingCardItems(updatedItems);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            border: "1px solid var(--border)",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                            backgroundColor: "var(--bg)",
+                            color: "var(--text-h)",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        >
+                          <option value="" disabled style={{ color: 'gray' }}>Select Option</option>
+                          <option value="Yes" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>Yes</option>
+                          <option value="No" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>No</option>
+                        </select>
+                      ) : (
+                        <input
+                          type={item.label === "Date Recorded" ? "datetime-local" : "text"}
+                          value={(() => {
+                            if (item.label === "Date Recorded" && item.value) {
+                              const clean = item.value.replace(" ", "T");
+                              if (clean.includes("T")) {
+                                const parts = clean.split(":");
+                                if (parts.length >= 2) {
+                                  return `${parts[0]}:${parts[1]}`;
+                                }
+                              }
+                              return clean;
                             }
-                          }
-                          return clean;
-                        }
-                        return item.value;
-                      })()}
-                      onChange={(e) => {
-                        const updatedItems = [...editingCardItems];
-                        let val = e.target.value;
-                        if (item.label === "Date Recorded" && val) {
-                          val = val.replace("T", " ");
-                          if (val.split(":").length === 2) {
-                            val += ":00";
-                          }
-                        }
-                        updatedItems[idx].value = val;
-                        setEditingCardItems(updatedItems);
-                      }}
-                      style={{
-                        width: "100%",
-                        padding: "8px 12px",
-                        border: "1px solid var(--border)",
-                        borderRadius: "8px",
-                        fontSize: "14px",
-                        backgroundColor: "transparent",
-                        color: "var(--text-h)",
-                        outline: "none",
-                        boxSizing: "border-box",
-                      }}
-                    />
-                  </div>
-                ));
+                            return item.value;
+                          })()}
+                          onChange={(e) => {
+                            const updatedItems = [...editingCardItems];
+                            let val = e.target.value;
+                            if (item.label === "Date Recorded" && val) {
+                              val = val.replace("T", " ");
+                              if (val.split(":").length === 2) {
+                                val += ":00";
+                              }
+                            }
+                            updatedItems[idx].value = val;
+                            setEditingCardItems(updatedItems);
+                          }}
+                          style={{
+                            width: "100%",
+                            padding: "8px 12px",
+                            border: "1px solid var(--border)",
+                            borderRadius: "8px",
+                            fontSize: "14px",
+                            backgroundColor: "transparent",
+                            color: "var(--text-h)",
+                            outline: "none",
+                            boxSizing: "border-box",
+                          }}
+                        />
+                      )}
+                    </div>
+                  );
+                });
               })()}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px", paddingBottom: "4px" }}>
                 {editingCardTitle ? (
