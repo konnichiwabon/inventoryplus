@@ -1,4 +1,4 @@
-import AnimatedList from "./AnimatedList";
+import AnimatedList from "../../shared/components/AnimatedList";
 
 interface DepartmentPeopleListProps {
     items: string[];

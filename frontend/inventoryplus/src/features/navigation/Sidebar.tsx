@@ -1,27 +1,27 @@
 import { useState, useEffect, type FC } from "react";
 import {
-    Archive,
-    BarChartSquare02,
-    CheckDone01,
-    ClockFastForward,
-    CurrencyDollarCircle,
-    Grid03,
-    HomeLine,
-    Inbox01,
-    LifeBuoy01,
-    LineChartUp03,
-    NotificationBox,
-    Package,
-    PieChart03,
-    Rows01,
-    Settings01,
-    Settings03,
-    Star01,
-    Stars01,
-    User01,
-    UserSquare,
-    Users01,
-    UsersPlus,
+  Archive,
+  BarChartSquare02,
+  CheckDone01,
+  ClockFastForward,
+  CurrencyDollarCircle,
+  Grid03,
+  HomeLine,
+  Inbox01,
+  LifeBuoy01,
+  LineChartUp03,
+  NotificationBox,
+  Package,
+  PieChart03,
+  Rows01,
+  Settings01,
+  Settings03,
+  Star01,
+  Stars01,
+  User01,
+  UserSquare,
+  Users01,
+  UsersPlus,
 } from "@untitledui/icons";
 export interface NavItemType {
   label: string;
@@ -31,69 +31,69 @@ export interface NavItemType {
   items?: NavItemType[];
 }
 
-import { useTheme } from "@/components/ThemeContext";
+import { useTheme } from "@/shared/context/ThemeContext";
 
 const navItemsDualTier: (NavItemType & { icon: FC<{ className?: string }> })[] = [
-    {
-        label: "Home",
-        href: "/",
-        icon: HomeLine,
-        items: [
-            { label: "Overview", href: "/overview", icon: Grid03 },
-            { label: "Products", href: "/products", icon: Package },
-            { label: "Orders", href: "/orders", icon: CurrencyDollarCircle },
-            { label: "Customers", href: "/customers", icon: Users01 },
-            { label: "Inbox", href: "/inbox", icon: Inbox01, badge: 4 },
-            { label: "What's new?", href: "/whats-new", icon: Stars01 },
-        ],
-    },
-    {
-        label: "Inventory",
-        href: "/inventory",
-        icon: Package,
-    },
-    {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: BarChartSquare02,
-        items: [
-            { label: "Overview", href: "/dashboard/overview", icon: Grid03 },
-            { label: "Notifications", href: "/dashboard/notifications", icon: NotificationBox, badge: 10 },
-            { label: "Analytics", href: "/dashboard/analytics", icon: LineChartUp03 },
-            { label: "Saved reports", href: "/dashboard/saved-reports", icon: Star01 },
-            { label: "Scheduled reports", href: "/dashboard/scheduled-reports", icon: ClockFastForward },
-            { label: "User reports", href: "/dashboard/user-reports", icon: UserSquare },
-            { label: "Manage notifications", href: "/dashboard/manage-notifications", icon: Settings03 },
-        ],
-    },
-    {
-        label: "Projects",
-        href: "/projects",
-        icon: Rows01,
-        items: [
-            { label: "View all", href: "/projects/all", icon: Rows01 },
-            { label: "Personal", href: "/projects/personal", icon: User01 },
-            { label: "Team", href: "/projects/team", icon: Users01 },
-            { label: "Shared with me", href: "/projects/shared-with-me", icon: UsersPlus },
-            { label: "Archive", href: "/projects/archive", icon: Archive },
-        ],
-    },
-    {
-        label: "Tasks",
-        href: "/tasks",
-        icon: CheckDone01,
-        badge: 10,
-    },
-    {
-        label: "Reporting",
-        href: "/reporting",
-        icon: PieChart03,
-    },
-    {
-        label: "Users",
-        href: "/users",
-        icon: Users01,
-    },
+  {
+    label: "Home",
+    href: "/",
+    icon: HomeLine,
+    items: [
+      { label: "Overview", href: "/overview", icon: Grid03 },
+      { label: "Products", href: "/products", icon: Package },
+      { label: "Orders", href: "/orders", icon: CurrencyDollarCircle },
+      { label: "Customers", href: "/customers", icon: Users01 },
+      { label: "Inbox", href: "/inbox", icon: Inbox01, badge: 4 },
+      { label: "What's new?", href: "/whats-new", icon: Stars01 },
+    ],
+  },
+  {
+    label: "Inventory",
+    href: "/inventory",
+    icon: Package,
+  },
+  {
+    label: "Dashboard",
+    href: "/dashboard",
+    icon: BarChartSquare02,
+    items: [
+      { label: "Overview", href: "/dashboard/overview", icon: Grid03 },
+      { label: "Notifications", href: "/dashboard/notifications", icon: NotificationBox, badge: 10 },
+      { label: "Analytics", href: "/dashboard/analytics", icon: LineChartUp03 },
+      { label: "Saved reports", href: "/dashboard/saved-reports", icon: Star01 },
+      { label: "Scheduled reports", href: "/dashboard/scheduled-reports", icon: ClockFastForward },
+      { label: "User reports", href: "/dashboard/user-reports", icon: UserSquare },
+      { label: "Manage notifications", href: "/dashboard/manage-notifications", icon: Settings03 },
+    ],
+  },
+  {
+    label: "Projects",
+    href: "/projects",
+    icon: Rows01,
+    items: [
+      { label: "View all", href: "/projects/all", icon: Rows01 },
+      { label: "Personal", href: "/projects/personal", icon: User01 },
+      { label: "Team", href: "/projects/team", icon: Users01 },
+      { label: "Shared with me", href: "/projects/shared-with-me", icon: UsersPlus },
+      { label: "Archive", href: "/projects/archive", icon: Archive },
+    ],
+  },
+  {
+    label: "Tasks",
+    href: "/tasks",
+    icon: CheckDone01,
+    badge: 10,
+  },
+  {
+    label: "Reporting",
+    href: "/reporting",
+    icon: PieChart03,
+  },
+  {
+    label: "Users",
+    href: "/users",
+    icon: Users01,
+  },
 ];
 
 interface SidebarNavigationSlimProps {
@@ -179,11 +179,10 @@ export function SidebarNavigationSlim({
               <button
                 key={item.label}
                 id={`rail-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-                className={`relative flex items-center justify-center md:w-11 md:h-11 w-9 h-9 md:rounded-lg rounded-md cursor-pointer transition-all duration-150 ${
-                  isActive
-                    ? "bg-[#F9F5FF] dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6]"
-                    : "text-[#667085] dark:text-[#94969C] hover:bg-[#F2F4F7] dark:hover:bg-[#1F242F] hover:text-[#344054] dark:hover:text-[#CECFD2]"
-                }`}
+                className={`relative flex items-center justify-center md:w-11 md:h-11 w-9 h-9 md:rounded-lg rounded-md cursor-pointer transition-all duration-150 ${isActive
+                  ? "bg-[#F9F5FF] dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6]"
+                  : "text-[#667085] dark:text-[#94969C] hover:bg-[#F2F4F7] dark:hover:bg-[#1F242F] hover:text-[#344054] dark:hover:text-[#CECFD2]"
+                  }`}
                 onClick={() => setActiveIndex(i)}
                 title={item.label}
                 aria-current={isActive ? "page" : undefined}
@@ -267,26 +266,23 @@ export function SidebarNavigationSlim({
                   key={sub.label}
                   href={sub.href}
                   id={`panel-${sub.label.toLowerCase().replace(/\s+/g, "-")}`}
-                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium no-underline transition-all duration-125 cursor-pointer ${
-                    isSubActive
-                      ? "bg-[#F9F5FF] dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6]"
-                      : "text-[#344054] dark:text-[#CECFD2] hover:bg-[#F9FAFB] dark:hover:bg-[#1F242F] hover:text-[#182230] dark:hover:text-[#F5F5F6]"
-                  }`}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium no-underline transition-all duration-125 cursor-pointer ${isSubActive
+                    ? "bg-[#F9F5FF] dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6]"
+                    : "text-[#344054] dark:text-[#CECFD2] hover:bg-[#F9FAFB] dark:hover:bg-[#1F242F] hover:text-[#182230] dark:hover:text-[#F5F5F6]"
+                    }`}
                   onClick={(e) => {
                     e.preventDefault();
                     setActiveSub(sub.label);
                   }}
                 >
                   {SubIcon && (
-                    <SubIcon className={`w-[18px] h-[18px] shrink-0 ${
-                      isSubActive ? "text-[#7F56D9] dark:text-[#B692F6]" : "text-[#667085] dark:text-[#94969C]"
-                    }`} />
+                    <SubIcon className={`w-[18px] h-[18px] shrink-0 ${isSubActive ? "text-[#7F56D9] dark:text-[#B692F6]" : "text-[#667085] dark:text-[#94969C]"
+                      }`} />
                   )}
                   <span className="flex-1 truncate">{sub.label}</span>
                   {sub.badge != null && (
-                    <span className={`min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-medium flex items-center justify-center leading-none ${
-                      isSubActive ? "bg-[#F4EBFF] dark:bg-[rgba(127,86,217,0.15)] text-[#6941C6] dark:text-[#B692F6]" : "bg-[#F2F4F7] dark:bg-[#1F242F] text-[#344054] dark:text-[#CECFD2]"
-                    }`}>{sub.badge}</span>
+                    <span className={`min-w-[22px] h-[22px] px-1.5 rounded-full text-xs font-medium flex items-center justify-center leading-none ${isSubActive ? "bg-[#F4EBFF] dark:bg-[rgba(127,86,217,0.15)] text-[#6941C6] dark:text-[#B692F6]" : "bg-[#F2F4F7] dark:bg-[#1F242F] text-[#344054] dark:text-[#CECFD2]"
+                      }`}>{sub.badge}</span>
                   )}
                 </a>
               );
@@ -298,11 +294,10 @@ export function SidebarNavigationSlim({
             <div className="text-[11px] font-semibold text-[#98A2B3] dark:text-[#85888E] uppercase tracking-wider mb-2">Theme</div>
             <div className="flex bg-[#F2F4F7] dark:bg-[#161B26] rounded-lg p-1 gap-1">
               <button
-                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${
-                  theme === 'light'
-                    ? 'bg-white text-[#6941C6] shadow-sm'
-                    : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${theme === 'light'
+                  ? 'bg-white text-[#6941C6] shadow-sm'
+                  : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
+                  }`}
                 onClick={() => setTheme('light')}
                 title="Light mode"
               >
@@ -313,11 +308,10 @@ export function SidebarNavigationSlim({
                 <span>Light</span>
               </button>
               <button
-                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${
-                  theme === 'dark'
-                    ? 'bg-white dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6] shadow-sm'
-                    : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${theme === 'dark'
+                  ? 'bg-white dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6] shadow-sm'
+                  : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
+                  }`}
                 onClick={() => setTheme('dark')}
                 title="Dark mode"
               >
@@ -327,11 +321,10 @@ export function SidebarNavigationSlim({
                 <span>Dark</span>
               </button>
               <button
-                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${
-                  theme === 'system'
-                    ? 'bg-white dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6] shadow-sm'
-                    : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
-                }`}
+                className={`flex-1 flex items-center justify-center gap-1.5 h-8 rounded-md text-xs font-medium cursor-pointer transition-all duration-150 ${theme === 'system'
+                  ? 'bg-white dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6] shadow-sm'
+                  : 'text-[#667085] dark:text-[#94969C] hover:text-[#344054] dark:hover:text-[#CECFD2] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[#1F242F]'
+                  }`}
                 onClick={() => setTheme('system')}
                 title="System preference"
               >
@@ -371,33 +364,33 @@ export function SidebarNavigationSlim({
 }
 
 export const SidebarNavigationSlimDemo = ({
-    activeIndex,
-    onItemSelect,
-    activeSub,
-    onSubSelect,
+  activeIndex,
+  onItemSelect,
+  activeSub,
+  onSubSelect,
 }: {
-    activeIndex?: number;
-    onItemSelect?: (index: number) => void;
-    activeSub?: string | null;
-    onSubSelect?: (label: string) => void;
+  activeIndex?: number;
+  onItemSelect?: (index: number) => void;
+  activeSub?: string | null;
+  onSubSelect?: (label: string) => void;
 }) => (
-    <SidebarNavigationSlim
-        items={navItemsDualTier}
-        activeIndex={activeIndex}
-        onItemSelect={onItemSelect}
-        activeSub={activeSub}
-        onSubSelect={onSubSelect}
-        footerItems={[
-            {
-                label: "Support",
-                href: "/support",
-                icon: LifeBuoy01,
-            },
-            {
-                label: "Settings",
-                href: "/settings",
-                icon: Settings01,
-            },
-        ]}
-    />
+  <SidebarNavigationSlim
+    items={navItemsDualTier}
+    activeIndex={activeIndex}
+    onItemSelect={onItemSelect}
+    activeSub={activeSub}
+    onSubSelect={onSubSelect}
+    footerItems={[
+      {
+        label: "Support",
+        href: "/support",
+        icon: LifeBuoy01,
+      },
+      {
+        label: "Settings",
+        href: "/settings",
+        icon: Settings01,
+      },
+    ]}
+  />
 );

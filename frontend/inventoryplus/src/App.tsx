@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { SidebarNavigationSlimDemo } from './components/sidebar';
-import Inventory from './components/Inventory';
+import { SidebarNavigationSlimDemo } from './features/navigation/Sidebar';
+import Inventory from './shared/inventory/Inventory';
 import './App.css';
 
 function App() {
@@ -51,7 +51,7 @@ function App() {
 
   return (
     <div className="app-layout">
-      <SidebarNavigationSlimDemo 
+      <SidebarNavigationSlimDemo
         activeIndex={activeIndex}
         onItemSelect={handleItemSelect}
         activeSub={activeSub}
@@ -59,7 +59,7 @@ function App() {
       />
       <main className={`app-main ${showRightSidebar ? 'sidebar-open' : ''}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '20px', width: '100%' }}>
         {isInventoryView ? (
-          <Inventory 
+          <Inventory
             key={resetKey}
             showRightSidebar={showRightSidebar}
             setShowRightSidebar={setShowRightSidebar}

@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import ProfileCard from './profileCard';
+import ProfileCard from '../../features/department/ProfileCard';
 import AnimatedCardGrid from './AnimatedCardGrid';
-import DepartmentPeopleList from './departmentPeopleList';
-import RightSidebar from './rightsidebar';
-import InfoCard from './card';
+import DepartmentPeopleList from '../../features/department/DepartmentPeopleList';
+import RightSidebar from '../../features/navigation/RightSidebar';
+import InfoCard from './Card';
+import AddDepartmentModal from './components/AddDepartmentModal';
+import AddMemberModal from './components/AddMemberModal';
+import EditSpecsModal from './components/EditSpecsModal';
 
 // Custom Clean SVG Icons
 const MonitorIcon = () => (
@@ -349,11 +352,11 @@ const mergeWithTemplate = (cardTitle: string, currentItems: any[]): any[] => {
 
   const isMulti = ["os", "ram", "storage", "monitor", "peripherals"].includes(
     cardTitle === "Operating System" ? "os" :
-    cardTitle === "RAM" ? "ram" :
-    cardTitle === "Storage" ? "storage" :
-    cardTitle === "GPU" ? "gpu" :
-    cardTitle === "Monitor" ? "monitor" :
-    cardTitle === "Peripherals" ? "peripherals" : ""
+      cardTitle === "RAM" ? "ram" :
+        cardTitle === "Storage" ? "storage" :
+          cardTitle === "GPU" ? "gpu" :
+            cardTitle === "Monitor" ? "monitor" :
+              cardTitle === "Peripherals" ? "peripherals" : ""
   );
 
   if (isMulti) {
@@ -499,7 +502,7 @@ export default function Inventory({
       if (res.ok) {
         const data = await res.json();
         setMembers(data);
-        
+
         // Restore selectedMemberIndex based on the saved username
         const savedUsername = localStorage.getItem("inventoryplus_selected_member_username");
         if (savedUsername) {
@@ -719,7 +722,7 @@ export default function Inventory({
     if (!categoryKey) return;
 
     let template = CARD_TEMPLATES[cardTitle] || [];
-    
+
     // For "assets", preserve existing UUID and Omada Username if there is one
     if (categoryKey === "assets" && currentSpecs.assets) {
       const existingUuid = currentSpecs.assets.find((item: any) => item.label === "Asset UUID");
@@ -907,15 +910,15 @@ export default function Inventory({
               { title: "Peripherals", key: "peripherals" }
             ];
 
-             const hiddenCategories = ALL_CATEGORIES.filter(cat => {
-               const val = specs[cat.key];
-               if (!val || val.length === 0) return true;
-               if (cat.key === "assets") {
-                 const displayable = (val || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
-                 return !displayable.some((item: any) => item.value !== "");
-               }
-               return false;
-             });
+            const hiddenCategories = ALL_CATEGORIES.filter(cat => {
+              const val = specs[cat.key];
+              if (!val || val.length === 0) return true;
+              if (cat.key === "assets") {
+                const displayable = (val || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
+                return !displayable.some((item: any) => item.value !== "");
+              }
+              return false;
+            });
 
             return (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -1237,533 +1240,42 @@ export default function Inventory({
       />
 
       {/* Add Department Modal */}
-      {showAddModal && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-            backdropFilter: "blur(4px)",
-          }}
-          onClick={() => setShowAddModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: "var(--bg, #fff)",
-              border: "1px solid var(--border)",
-              borderRadius: "16px",
-              padding: "24px",
-              width: "100%",
-              maxWidth: "400px",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-              margin: "0 16px",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
-              Add Department Card
-            </h3>
-            <form onSubmit={handleAddCardSubmit}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
-                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
-                  Department Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Engineering, Marketing, Finance"
-                  value={newDeptName}
-                  onChange={(e) => setNewDeptName(e.target.value)}
-                  autoFocus
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "transparent",
-                    color: "var(--text-h)",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddModal(false);
-                    setNewDeptName("");
-                  }}
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "var(--code-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "var(--text-h)",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "#7F56D9",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#fff",
-                    cursor: "pointer",
-                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
-                >
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AddDepartmentModal
+        isOpen={showAddModal}
+        newDeptName={newDeptName}
+        setNewDeptName={setNewDeptName}
+        onClose={() => {
+          setShowAddModal(false);
+          setNewDeptName("");
+        }}
+        onSubmit={handleAddCardSubmit}
+      />
 
       {/* Add Member Modal */}
-      {showAddMemberModal && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-            backdropFilter: "blur(4px)",
-          }}
-          onClick={() => setShowAddMemberModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: "var(--bg, #fff)",
-              border: "1px solid var(--border)",
-              borderRadius: "16px",
-              padding: "24px",
-              width: "100%",
-              maxWidth: "400px",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-              margin: "0 16px",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
-              Add Team Member
-            </h3>
-            <form onSubmit={handleAddMemberSubmit}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "16px" }}>
-                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
-                  Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. John Doe"
-                  value={newMemberName}
-                  onChange={(e) => setNewMemberName(e.target.value)}
-                  autoFocus
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "transparent",
-                    color: "var(--text-h)",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
-                <label style={{ fontSize: "14px", fontWeight: 500, color: "var(--text-h)" }}>
-                  Email (Optional)
-                </label>
-                <input
-                  type="email"
-                  placeholder="e.g. john@example.com"
-                  value={newMemberEmail}
-                  onChange={(e) => setNewMemberEmail(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "10px 12px",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    backgroundColor: "transparent",
-                    color: "var(--text-h)",
-                    outline: "none",
-                    boxSizing: "border-box",
-                  }}
-                />
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px" }}>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setShowAddMemberModal(false);
-                    setNewMemberName("");
-                    setNewMemberEmail("");
-                  }}
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "var(--code-bg)",
-                    border: "1px solid var(--border)",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "var(--text-h)",
-                    cursor: "pointer",
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmittingMember}
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: isSubmittingMember ? "#bfa8e6" : "#7F56D9",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#fff",
-                    cursor: isSubmittingMember ? "not-allowed" : "pointer",
-                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
-                  }}
-                  onMouseOver={(e) => {
-                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#6941C6';
-                  }}
-                  onMouseOut={(e) => {
-                    if (!isSubmittingMember) e.currentTarget.style.backgroundColor = '#7F56D9';
-                  }}
-                >
-                  {isSubmittingMember ? "Saving..." : "Save"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <AddMemberModal
+        isOpen={showAddMemberModal}
+        onClose={() => {
+          setShowAddMemberModal(false);
+          setNewMemberName("");
+          setNewMemberEmail("");
+        }}
+        onSubmit={handleAddMemberSubmit}
+        newMemberName={newMemberName}
+        setNewMemberName={setNewMemberName}
+        newMemberEmail={newMemberEmail}
+        setNewMemberEmail={setNewMemberEmail}
+        isSubmittingMember={isSubmittingMember}
+      />
 
       {/* Edit Specs Modal */}
-      {editingCardTitle !== null && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 1000,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            backgroundColor: "rgba(0, 0, 0, 0.4)",
-            backdropFilter: "blur(4px)",
-          }}
-          onClick={() => setEditingCardTitle(null)}
-        >
-          <div
-            style={{
-              backgroundColor: "var(--bg, #fff)",
-              border: "1px solid var(--border)",
-              borderRadius: "16px",
-              padding: "24px",
-              width: "100%",
-              maxWidth: "450px",
-              boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)",
-              margin: "0 16px",
-              maxHeight: "90vh",
-              display: "flex",
-              flexDirection: "column",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: "0 0 16px 0", fontSize: "18px", fontWeight: 700, color: "var(--text-h)" }}>
-              Edit {editingCardTitle} Specs
-            </h3>
-            <form onSubmit={handleSaveCardEdits} style={{ display: "flex", flexDirection: "column", gap: "16px", overflowY: "auto", paddingRight: "4px", flex: 1 }}>
-              {(() => {
-                const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
-                if (isMulti) {
-                  return (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                      {(editingCardItems as any[][]).map((moduleItems, moduleIdx) => {
-                        const slotItem = moduleItems.find(item =>
-                          item.label.toLowerCase().includes('slot') ||
-                          item.label.toLowerCase().includes('type')
-                        );
-                        const moduleLabel = slotItem && slotItem.value
-                          ? `${editingCardTitle} (${slotItem.value})`
-                          : `${editingCardTitle} #${moduleIdx + 1}`;
-
-                        return (
-                          <div
-                            key={moduleIdx}
-                            style={{
-                              border: "1px solid var(--border)",
-                              borderRadius: "12px",
-                              padding: "16px",
-                              backgroundColor: "rgba(0, 0, 0, 0.02)",
-                              position: "relative"
-                            }}
-                          >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                              <h4 style={{ margin: 0, fontSize: "14px", fontWeight: 700, color: "var(--text-h)" }}>
-                                {moduleLabel}
-                              </h4>
-                              {(editingCardItems as any[][]).length > 1 && (
-                                <button
-                                  type="button"
-                                  onClick={() => {
-                                    const updated = (editingCardItems as any[][]).filter((_, i) => i !== moduleIdx);
-                                    setEditingCardItems(updated);
-                                  }}
-                                  style={{
-                                    background: "none",
-                                    border: "none",
-                                    color: "#F43F5E",
-                                    fontSize: "12px",
-                                    fontWeight: 600,
-                                    cursor: "pointer",
-                                    padding: "4px 8px",
-                                    borderRadius: "4px",
-                                    transition: "background-color 0.2s"
-                                  }}
-                                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = "rgba(244, 63, 94, 0.1)")}
-                                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = "transparent")}
-                                >
-                                  Remove
-                                </button>
-                              )}
-                            </div>
-
-                            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                              {moduleItems.map((item, idx) => (
-                                <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                  <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
-                                    {item.label}
-                                  </label>
-                                  <input
-                                    type="text"
-                                    value={item.value}
-                                    onChange={(e) => {
-                                      const updatedItems = [...editingCardItems] as any[][];
-                                      updatedItems[moduleIdx][idx].value = e.target.value;
-                                      setEditingCardItems(updatedItems);
-                                    }}
-                                    style={{
-                                      width: "100%",
-                                      padding: "8px 12px",
-                                      border: "1px solid var(--border)",
-                                      borderRadius: "8px",
-                                      fontSize: "14px",
-                                      backgroundColor: "transparent",
-                                      color: "var(--text-h)",
-                                      outline: "none",
-                                      boxSizing: "border-box",
-                                    }}
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const prototypeModule = (editingCardItems as any[][])[0];
-                          const newModule = prototypeModule.map(item => ({
-                            label: item.label,
-                            value: ""
-                          }));
-                          setEditingCardItems([...editingCardItems, newModule]);
-                        }}
-                        style={{
-                          padding: "10px",
-                          backgroundColor: "transparent",
-                          border: "1px dashed var(--border)",
-                          borderRadius: "8px",
-                          color: "var(--text-h)",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          transition: "all 0.2s"
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.backgroundColor = "var(--code-bg)";
-                          e.currentTarget.style.borderColor = "var(--text-h)";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.backgroundColor = "transparent";
-                          e.currentTarget.style.borderColor = "var(--border)";
-                        }}
-                      >
-                        + Add {editingCardTitle} Stick/Drive
-                      </button>
-                    </div>
-                  );
-                }
-
-                return editingCardItems.map((item, idx) => {
-                  const isDhcp = item.label === "DHCP Enabled";
-                  return (
-                    <div key={idx} style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                      <label style={{ fontSize: "13px", fontWeight: 600, color: "var(--text)" }}>
-                        {item.label}
-                      </label>
-                      {isDhcp ? (
-                        <select
-                          value={item.value ? (String(item.value).toLowerCase() === "true" || String(item.value).toLowerCase() === "yes" ? "Yes" : "No") : ""}
-                          onChange={(e) => {
-                            const updatedItems = [...editingCardItems];
-                            updatedItems[idx].value = e.target.value;
-                            setEditingCardItems(updatedItems);
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "8px 12px",
-                            border: "1px solid var(--border)",
-                            borderRadius: "8px",
-                            fontSize: "14px",
-                            backgroundColor: "var(--bg)",
-                            color: "var(--text-h)",
-                            outline: "none",
-                            boxSizing: "border-box",
-                          }}
-                        >
-                          <option value="" disabled style={{ color: 'gray' }}>Select Option</option>
-                          <option value="Yes" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>Yes</option>
-                          <option value="No" style={{ backgroundColor: "var(--bg)", color: "var(--text-h)" }}>No</option>
-                        </select>
-                      ) : (
-                        <input
-                          type={item.label === "Date Recorded" ? "datetime-local" : "text"}
-                          value={(() => {
-                            if (item.label === "Date Recorded" && item.value) {
-                              const clean = item.value.replace(" ", "T");
-                              if (clean.includes("T")) {
-                                const parts = clean.split(":");
-                                if (parts.length >= 2) {
-                                  return `${parts[0]}:${parts[1]}`;
-                                }
-                              }
-                              return clean;
-                            }
-                            return item.value;
-                          })()}
-                          onChange={(e) => {
-                            const updatedItems = [...editingCardItems];
-                            let val = e.target.value;
-                            if (item.label === "Date Recorded" && val) {
-                              val = val.replace("T", " ");
-                              if (val.split(":").length === 2) {
-                                val += ":00";
-                              }
-                            }
-                            updatedItems[idx].value = val;
-                            setEditingCardItems(updatedItems);
-                          }}
-                          style={{
-                            width: "100%",
-                            padding: "8px 12px",
-                            border: "1px solid var(--border)",
-                            borderRadius: "8px",
-                            fontSize: "14px",
-                            backgroundColor: "transparent",
-                            color: "var(--text-h)",
-                            outline: "none",
-                            boxSizing: "border-box",
-                          }}
-                        />
-                      )}
-                    </div>
-                  );
-                });
-              })()}
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "16px", paddingBottom: "4px" }}>
-                {editingCardTitle ? (
-                  <button
-                    type="button"
-                    onClick={() => handleDeleteCard(editingCardTitle!)}
-                    style={{
-                      padding: "10px 16px",
-                      backgroundColor: "transparent",
-                      border: "1px solid #FDA29B",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      color: "#F04438",
-                      cursor: "pointer",
-                      transition: "all 0.2s"
-                    }}
-                    onMouseOver={(e) => {
-                      e.currentTarget.style.backgroundColor = "#FEF3F2";
-                    }}
-                    onMouseOut={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                    }}
-                  >
-                    Delete Card
-                  </button>
-                ) : <div />}
-                <div style={{ display: "flex", gap: "12px" }}>
-                  <button
-                    type="button"
-                    onClick={() => setEditingCardTitle(null)}
-                    style={{
-                      padding: "10px 16px",
-                      backgroundColor: "var(--code-bg)",
-                      border: "1px solid var(--border)",
-                      borderRadius: "8px",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      color: "var(--text-h)",
-                      cursor: "pointer",
-                    }}
-                  >
-                    Cancel
-                  </button>
-                <button
-                  type="submit"
-                  style={{
-                    padding: "10px 16px",
-                    backgroundColor: "#7F56D9",
-                    border: "none",
-                    borderRadius: "8px",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                    color: "#fff",
-                    cursor: "pointer",
-                    boxShadow: "0 1px 2px rgba(16, 24, 40, 0.05)",
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#6941C6')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#7F56D9')}
-                >
-                  Save Changes
-                </button>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <EditSpecsModal
+        editingCardTitle={editingCardTitle}
+        setEditingCardTitle={setEditingCardTitle}
+        editingCardItems={editingCardItems}
+        setEditingCardItems={setEditingCardItems}
+        handleSaveCardEdits={handleSaveCardEdits}
+        handleDeleteCard={handleDeleteCard}
+      />
     </div>
   );
 }

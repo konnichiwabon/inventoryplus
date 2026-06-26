@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Users01 } from "@untitledui/icons";
-import AnimatedList from "./AnimatedList";
+import AnimatedList from "../../shared/components/AnimatedList";
 
 interface RightSidebarProps {
     isOpen: boolean;
