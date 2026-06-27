@@ -1,104 +1,13 @@
-import { useState, useEffect, type FC } from "react";
-import {
-  Archive,
-  BarChartSquare02,
-  CheckDone01,
-  ClockFastForward,
-  CurrencyDollarCircle,
-  Grid03,
-  HomeLine,
-  Inbox01,
-  LifeBuoy01,
-  LineChartUp03,
-  NotificationBox,
-  Package,
-  PieChart03,
-  Rows01,
-  Settings01,
-  Settings03,
-  Star01,
-  Stars01,
-  User01,
-  UserSquare,
-  Users01,
-  UsersPlus,
-} from "@untitledui/icons";
-export interface NavItemType {
-  label: string;
-  href: string;
-  icon?: FC<{ className?: string }>;
-  badge?: number;
-  items?: NavItemType[];
-}
-
+import { useState } from "react";
 import { useTheme } from "@/shared/context/ThemeContext";
-
-const navItemsDualTier: (NavItemType & { icon: FC<{ className?: string }> })[] = [
-  {
-    label: "Home",
-    href: "/",
-    icon: HomeLine,
-    items: [
-      { label: "Overview", href: "/overview", icon: Grid03 },
-      { label: "Products", href: "/products", icon: Package },
-      { label: "Orders", href: "/orders", icon: CurrencyDollarCircle },
-      { label: "Customers", href: "/customers", icon: Users01 },
-      { label: "Inbox", href: "/inbox", icon: Inbox01, badge: 4 },
-      { label: "What's new?", href: "/whats-new", icon: Stars01 },
-    ],
-  },
-  {
-    label: "Inventory",
-    href: "/inventory",
-    icon: Package,
-  },
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: BarChartSquare02,
-    items: [
-      { label: "Overview", href: "/dashboard/overview", icon: Grid03 },
-      { label: "Notifications", href: "/dashboard/notifications", icon: NotificationBox, badge: 10 },
-      { label: "Analytics", href: "/dashboard/analytics", icon: LineChartUp03 },
-      { label: "Saved reports", href: "/dashboard/saved-reports", icon: Star01 },
-      { label: "Scheduled reports", href: "/dashboard/scheduled-reports", icon: ClockFastForward },
-      { label: "User reports", href: "/dashboard/user-reports", icon: UserSquare },
-      { label: "Manage notifications", href: "/dashboard/manage-notifications", icon: Settings03 },
-    ],
-  },
-  {
-    label: "Projects",
-    href: "/projects",
-    icon: Rows01,
-    items: [
-      { label: "View all", href: "/projects/all", icon: Rows01 },
-      { label: "Personal", href: "/projects/personal", icon: User01 },
-      { label: "Team", href: "/projects/team", icon: Users01 },
-      { label: "Shared with me", href: "/projects/shared-with-me", icon: UsersPlus },
-      { label: "Archive", href: "/projects/archive", icon: Archive },
-    ],
-  },
-  {
-    label: "Tasks",
-    href: "/tasks",
-    icon: CheckDone01,
-    badge: 10,
-  },
-  {
-    label: "Reporting",
-    href: "/reporting",
-    icon: PieChart03,
-  },
-  {
-    label: "Users",
-    href: "/users",
-    icon: Users01,
-  },
-];
+import { useClock } from "@/shared/hooks/useClock";
+import { type NavItemType } from "./types";
+import { SidebarButton } from "./SidebarButton";
+import { navItemsDualTier, footerItemsDemo } from "./constants";
 
 interface SidebarNavigationSlimProps {
-  items: (NavItemType & { icon: FC<{ className?: string }> })[];
-  footerItems?: (NavItemType & { icon: FC<{ className?: string }> })[];
+  items: (NavItemType & { icon: React.FC<{ className?: string }> })[];
+  footerItems?: (NavItemType & { icon: React.FC<{ className?: string }> })[];
   activeIndex?: number;
   onItemSelect?: (index: number) => void;
   activeSub?: string | null;
@@ -132,7 +41,7 @@ export function SidebarNavigationSlim({
 }: SidebarNavigationSlimProps) {
   const [localActiveIndex, setLocalActiveIndex] = useState(0);
   const [localActiveSub, setLocalActiveSub] = useState<string | null>("Overview");
-  const [now, setNow] = useState(new Date());
+  const now = useClock();
   const { theme, setTheme } = useTheme();
 
   const activeIndex = propActiveIndex !== undefined ? propActiveIndex : localActiveIndex;
@@ -143,11 +52,6 @@ export function SidebarNavigationSlim({
 
   const activeSub = propActiveSub !== undefined ? propActiveSub : localActiveSub;
   const setActiveSub = onSubSelect ?? setLocalActiveSub;
-
-  useEffect(() => {
-    const timer = setInterval(() => setNow(new Date()), 30000);
-    return () => clearInterval(timer);
-  }, []);
 
   const activeItem = items[activeIndex];
   const subItems = activeItem?.items ?? [];
@@ -173,27 +77,17 @@ export function SidebarNavigationSlim({
         {/* Main nav icons */}
         <nav className="flex flex-col items-center gap-0.5 flex-1 w-full px-1.5 md:px-2" aria-label="Main navigation">
           {items.map((item, i) => {
-            const Icon = item.icon;
             const isActive = activeIndex === i;
             return (
-              <button
+              <SidebarButton
                 key={item.label}
-                id={`rail-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-                className={`relative flex items-center justify-center md:w-11 md:h-11 w-9 h-9 md:rounded-lg rounded-md cursor-pointer transition-all duration-150 ${isActive
-                  ? "bg-[#F9F5FF] dark:bg-[#1F242F] text-[#6941C6] dark:text-[#B692F6]"
-                  : "text-[#667085] dark:text-[#94969C] hover:bg-[#F2F4F7] dark:hover:bg-[#1F242F] hover:text-[#344054] dark:hover:text-[#CECFD2]"
-                  }`}
+                label={item.label}
+                icon={item.icon!}
+                isActive={isActive}
                 onClick={() => setActiveIndex(i)}
-                title={item.label}
-                aria-current={isActive ? "page" : undefined}
-              >
-                <Icon className="md:w-[22px] md:h-[22px] w-[18px] h-[18px]" />
-                {item.badge != null && (
-                  <span className="absolute top-0.5 right-0.5 md:top-1 md:right-0.5 min-w-[16px] h-4 px-0.5 rounded-full bg-[#F04438] text-white text-[9px] font-bold flex items-center justify-center leading-none border-2 border-white dark:border-[#0C111D]">
-                    {item.badge > 9 ? "9+" : item.badge}
-                  </span>
-                )}
-              </button>
+                badge={item.badge}
+                idPrefix="rail"
+              />
             );
           })}
         </nav>
@@ -201,19 +95,15 @@ export function SidebarNavigationSlim({
         {/* Footer icons */}
         {footerItems && (
           <div className="flex flex-col items-center gap-0.5 w-full px-1.5 md:px-2 border-t border-[#EAECF0] dark:border-[#1F242F] pt-3 mt-1">
-            {footerItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <button
-                  key={item.label}
-                  id={`rail-ft-${item.label.toLowerCase().replace(/\s+/g, "-")}`}
-                  className="relative flex items-center justify-center md:w-11 md:h-11 w-9 h-9 md:rounded-lg rounded-md cursor-pointer text-[#667085] dark:text-[#94969C] hover:bg-[#F2F4F7] dark:hover:bg-[#1F242F] hover:text-[#344054] dark:hover:text-[#CECFD2] transition-all duration-150"
-                  title={item.label}
-                >
-                  <Icon className="md:w-[22px] md:h-[22px] w-[18px] h-[18px]" />
-                </button>
-              );
-            })}
+            {footerItems.map((item) => (
+              <SidebarButton
+                key={item.label}
+                label={item.label}
+                icon={item.icon!}
+                isActive={false}
+                idPrefix="rail-ft"
+              />
+            ))}
             {/* Avatar */}
             <div className="mt-1.5 cursor-pointer relative" title="User profile">
               <img
@@ -380,17 +270,6 @@ export const SidebarNavigationSlimDemo = ({
     onItemSelect={onItemSelect}
     activeSub={activeSub}
     onSubSelect={onSubSelect}
-    footerItems={[
-      {
-        label: "Support",
-        href: "/support",
-        icon: LifeBuoy01,
-      },
-      {
-        label: "Settings",
-        href: "/settings",
-        icon: Settings01,
-      },
-    ]}
+    footerItems={footerItemsDemo}
   />
 );

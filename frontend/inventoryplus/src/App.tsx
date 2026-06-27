@@ -1,25 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { SidebarNavigationSlimDemo } from './features/navigation/Sidebar';
 import Inventory from './shared/inventory/Inventory';
+import { useLocalStorage } from './shared/hooks/useLocalStorage';
 import './App.css';
 
 function App() {
-  const [activeIndex, setActiveIndex] = useState(() => {
-    const saved = localStorage.getItem("inventoryplus_active_index");
-    return saved !== null ? Number(saved) : 0;
-  });
-  const [activeSub, setActiveSub] = useState(() => {
-    const saved = localStorage.getItem("inventoryplus_active_sub");
-    return saved !== null ? saved : "Overview";
-  });
-  const [showRightSidebar, setShowRightSidebar] = useState(() => {
-    return localStorage.getItem("inventoryplus_show_right_sidebar") === "true";
-  });
+  const [activeIndex, setActiveIndex] = useLocalStorage("inventoryplus_active_index", 0);
+  const [activeSub, setActiveSub] = useLocalStorage("inventoryplus_active_sub", "Overview");
+  const [showRightSidebar, setShowRightSidebar] = useLocalStorage("inventoryplus_show_right_sidebar", false);
   const [resetKey, setResetKey] = useState(0);
 
   const handleItemSelect = (index: number) => {
     setActiveIndex(index);
-    localStorage.setItem("inventoryplus_active_index", String(index));
     // Clear selection if explicitly clicking sidebar tab
     localStorage.removeItem("inventoryplus_selected_department");
     localStorage.removeItem("inventoryplus_selected_member_index");
@@ -31,7 +23,6 @@ function App() {
 
   const handleSubSelect = (label: string) => {
     setActiveSub(label);
-    localStorage.setItem("inventoryplus_active_sub", label);
     // Clear selection if explicitly clicking sidebar sub-select
     localStorage.removeItem("inventoryplus_selected_department");
     localStorage.removeItem("inventoryplus_selected_member_index");
@@ -44,10 +35,6 @@ function App() {
   };
 
   const isInventoryView = activeIndex === 1 || (activeIndex === 0 && (activeSub === "Overview" || activeSub === "Products" || activeSub === "Inventory"));
-
-  useEffect(() => {
-    localStorage.setItem("inventoryplus_show_right_sidebar", String(showRightSidebar));
-  }, [showRightSidebar]);
 
   return (
     <div className="app-layout">
