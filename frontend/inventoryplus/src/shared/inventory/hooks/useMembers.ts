@@ -5,7 +5,6 @@ const API_BASE_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUr
 
 export function useMembers(
   selectedDepartment: string | null,
-  selectedMemberIndex: number,
   setSelectedMemberIndex: (idx: number) => void
 ) {
   const [members, setMembers] = useState<any[]>([]);

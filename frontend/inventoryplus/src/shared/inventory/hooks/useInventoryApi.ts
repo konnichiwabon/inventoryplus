@@ -19,7 +19,7 @@ export function useInventoryApi() {
     isSubmittingMember,
     fetchMembers,
     handleAddMemberSubmit,
-  } = useMembers(selectedDepartment, selectedMemberIndex, setSelectedMemberIndex);
+  } = useMembers(selectedDepartment, setSelectedMemberIndex);
 
   // Sync selection to localStorage
   useEffect(() => {
