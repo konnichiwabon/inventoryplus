@@ -3,271 +3,16 @@ import ProfileCard from '../../features/department/ProfileCard';
 import AnimatedCardGrid from './AnimatedCardGrid';
 import DepartmentPeopleList from '../../features/department/DepartmentPeopleList';
 import RightSidebar from '../../features/navigation/RightSidebar';
-import InfoCard from './Card';
 import AddDepartmentModal from './components/AddDepartmentModal';
 import AddMemberModal from './components/AddMemberModal';
 import EditSpecsModal from './components/EditSpecsModal';
-
-// Custom Clean SVG Icons
-const MonitorIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
-    <line x1="8" y1="21" x2="16" y2="21" />
-    <line x1="12" y1="17" x2="12" y2="21" />
-  </svg>
-);
-
-const CpuIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="4" width="16" height="16" rx="2" ry="2" />
-    <rect x="9" y="9" width="6" height="6" />
-    <line x1="9" y1="1" x2="9" y2="4" />
-    <line x1="15" y1="1" x2="15" y2="4" />
-    <line x1="9" y1="20" x2="9" y2="23" />
-    <line x1="15" y1="20" x2="15" y2="23" />
-    <line x1="20" y1="9" x2="23" y2="9" />
-    <line x1="20" y1="15" x2="23" y2="15" />
-    <line x1="1" y1="9" x2="4" y2="9" />
-    <line x1="1" y1="15" x2="4" y2="15" />
-  </svg>
-);
-
-const GlobeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10" />
-    <line x1="2" y1="12" x2="22" y2="12" />
-    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
-  </svg>
-);
-
-const KeyboardIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="4" width="20" height="16" rx="2" ry="2" />
-    <line x1="6" y1="8" x2="6" y2="8" />
-    <line x1="10" y1="8" x2="10" y2="8" />
-    <line x1="14" y1="8" x2="14" y2="8" />
-    <line x1="18" y1="8" x2="18" y2="8" />
-    <line x1="6" y1="12" x2="6" y2="12" />
-    <line x1="10" y1="12" x2="10" y2="12" />
-    <line x1="14" y1="12" x2="14" y2="12" />
-    <line x1="18" y1="12" x2="18" y2="12" />
-    <line x1="7" y1="16" x2="17" y2="16" />
-  </svg>
-);
+import DiagnosticsGrid from './components/DiagnosticsGrid';
+import { useInventoryApi } from './hooks/useInventoryApi';
+import { getDefaultWorkstationSpecs } from './hooks/useWorkstationSpecs';
 
 
-const rawApiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
-const API_BASE_URL = rawApiUrl.endsWith('/') ? rawApiUrl.slice(0, -1) : rawApiUrl;
 
-const cardProps = {
-  name: "EDDT",
 
-  handle: "javicodes",
-  status: "Online",
-  contactText: "Contact Me",
-  avatarUrl: "/path/to/avatar.jpg",
-  showUserInfo: false,
-  enableTilt: true,
-  enableMobileTilt: false,
-  onContactClick: () => console.log('Contact clicked'),
-  behindGlowColor: "rgba(125, 190, 255, 0.67)",
-  iconUrl: "/assets/demo/iconpattern.png",
-  behindGlowEnabled: true,
-  innerGradient: "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)",
-};
-
-const normalizeSpecCategory = (items: any): any[][] => {
-  if (!items || items.length === 0) return [[]];
-  if (!Array.isArray(items[0])) {
-    return [items];
-  }
-  return items;
-};
-
-const getDefaultWorkstationSpecs = (mName: string, dept: string) => {
-  if (mName.includes("Sarah Connor")) {
-    return {
-      assets: [
-        { label: "Asset Tag", value: "AST-9821" },
-        { label: "Hostname", value: `${dept.toUpperCase()}-WKSTN` },
-        { label: "Date Recorded", value: "2026-06-22" }
-      ],
-      os: [
-        [
-          { label: "OS Name", value: "Ubuntu" },
-          { label: "OS Version", value: "24.04 LTS" },
-          { label: "OS Architecture", value: "64-bit" }
-        ]
-      ],
-      motherboard: [
-        { label: "MB Manufacturer", value: "ASUSTeK COMPUTER INC." },
-        { label: "MB Model", value: "ROG STRIX B550-F GAMING" },
-        { label: "MB Serial Number", value: "L8M0KC061920" },
-        { label: "BIOS Serial Number", value: "MB-1234567890" }
-      ],
-      cpu: [
-        { label: "CPU Manufacturer", value: "AMD" },
-        { label: "CPU Model", value: "AMD Ryzen 5 5600X @ 3.70GHz" },
-        { label: "CPU Cores", value: "6" },
-        { label: "CPU Threads", value: "12" }
-      ],
-      ram: [
-        [
-          { label: "RAM Capacity", value: "16 GB" },
-          { label: "RAM Speed", value: "3200 MHz" },
-          { label: "RAM Model", value: "Corsair Vengeance LPX" },
-          { label: "RAM Slot Number", value: "DIMM_A2" },
-          { label: "RAM Serial Number", value: "CMK16GX4M2B3200C16" }
-        ]
-      ],
-      storage: [
-        [
-          { label: "Storage Type", value: "SSD (NVMe)" },
-          { label: "Storage Capacity", value: "512 GB" },
-          { label: "Storage Interface", value: "PCIe Gen 4.0" },
-          { label: "Storage Serial Number", value: "S67ENX0R203920" }
-        ]
-      ],
-      gpu: [
-        { label: "GPU Manufacturer", value: "AMD" },
-        { label: "GPU Model", value: "AMD Radeon RX 6600" },
-        { label: "GPU VRAM", value: "8 GB GDDR6" },
-        { label: "Driver Version", value: "Adrenalin 24.3.1" },
-        { label: "GPU Serial Number", value: "SN-GPU-987654321" }
-      ],
-      network: [
-        { label: "Current IP", value: "192.168.1.105" },
-        { label: "MAC Address", value: "00:11:22:33:44:55" },
-        { label: "DHCP Enabled", value: "Yes" },
-        { label: "Port Number", value: "22" },
-        { label: "VLAN ID", value: "10" },
-        { label: "Omada Username", value: "net_admin" }
-      ],
-      peripherals: [
-        [
-          { label: "Peripheral Type", value: "Keyboard" },
-          { label: "Peripheral Brand", value: "Keychron" },
-          { label: "Peripheral Model", value: "K2 (Bluetooth)" },
-          { label: "Peripheral Serial Number", value: "SN-PER-4819" }
-        ],
-        [
-          { label: "Peripheral Type", value: "Mouse" },
-          { label: "Peripheral Brand", value: "Razer" },
-          { label: "Peripheral Model", value: "DeathAdder V2" },
-          { label: "Peripheral Serial Number", value: "SN-MS-7712" }
-        ]
-      ],
-      monitor: [
-        [
-          { label: "Monitor Brand", value: "ASUS" },
-          { label: "Monitor Model", value: "TUF Gaming VG27AQ" },
-          { label: "Monitor Resolution", value: "2560x1440" },
-          { label: "Monitor Serial Number", value: "SN-MON-98124" }
-        ]
-      ]
-    };
-  }
-
-  return {
-    assets: [
-      { label: "Asset Tag", value: "AST-4412" },
-      { label: "Username", value: `${mName.toUpperCase().replace(/\s+/g, '-')}-PC` },
-      { label: "Date Recorded", value: "2026-06-22 10:00:00" }
-    ],
-    os: [
-      [
-        { label: "OS Name", value: "Windows" },
-        { label: "OS Version", value: "11 Pro" },
-        { label: "OS Architecture", value: "64-bit" }
-      ],
-      [
-        { label: "OS Name", value: "Ubuntu" },
-        { label: "OS Version", value: "22.04 LTS" },
-        { label: "OS Architecture", value: "64-bit" }
-      ]
-    ],
-    motherboard: [
-      { label: "MB Manufacturer", value: "Micro-Star International Co., Ltd." },
-      { label: "MB Model", value: "PRO Z690-A WIFI" },
-      { label: "MB Serial Number", value: "L9M1KC071821" },
-      { label: "BIOS Serial Number", value: "MS-7D25" },
-      { label: "Case", value: "NZXT H5 Flow" }
-    ],
-    cpu: [
-      { label: "CPU Manufacturer", value: "Intel" },
-      { label: "CPU Model", value: "Intel Core i7-12700K @ 4.90GHz" },
-      { label: "CPU Cores", value: "12" },
-      { label: "CPU Threads", value: "20" }
-    ],
-    ram: [
-      [
-        { label: "RAM Capacity", value: "16 GB" },
-        { label: "RAM Speed", value: "5200 MHz" },
-        { label: "RAM Model", value: "G.Skill Trident Z5" },
-        { label: "RAM Slot Number", value: "DIMM_A2" },
-        { label: "RAM Serial Number", value: "F5-5200J4040A16GX2-1" }
-      ],
-      [
-        { label: "RAM Capacity", value: "16 GB" },
-        { label: "RAM Speed", value: "5200 MHz" },
-        { label: "RAM Model", value: "G.Skill Trident Z5" },
-        { label: "RAM Slot Number", value: "DIMM_B2" },
-        { label: "RAM Serial Number", value: "F5-5200J4040A16GX2-2" }
-      ]
-    ],
-    storage: [
-      [
-        { label: "Storage Type", value: "SSD (NVMe)" },
-        { label: "Storage Capacity", value: "1 TB" },
-        { label: "Storage Interface", value: "PCIe Gen 4.0 x4" },
-        { label: "Storage Serial Number", value: "S67ENX0R203920" }
-      ]
-    ],
-    gpu: [
-      { label: "GPU Manufacturer", value: "NVIDIA" },
-      { label: "GPU Model", value: "NVIDIA GeForce RTX 3070" },
-      { label: "GPU VRAM", value: "8 GB" },
-      { label: "Driver Version", value: "NVIDIA 550.67" },
-      { label: "GPU Serial Number", value: "SN-GPU-987654321" }
-    ],
-    network: [
-      { label: "Current IP", value: "192.168.1.142" },
-      { label: "MAC Address", value: "e0:d5:5e:a1:b2:c3" },
-      { label: "DHCP Enabled", value: "Yes" },
-      { label: "Port Number", value: "80" },
-      { label: "VLAN ID", value: "20" },
-      { label: "Omada Username", value: "net_admin" }
-    ],
-    peripherals: [
-      [
-        { label: "Peripheral Type", value: "Keyboard" },
-        { label: "Peripheral Brand", value: "Keychron" },
-        { label: "Peripheral Model", value: "K8 (Wireless)" },
-        { label: "Peripheral Serial Number", value: "SN-KB-9921" }
-      ],
-      [
-        { label: "Peripheral Type", value: "Mouse" },
-        { label: "Peripheral Brand", value: "Logitech" },
-        { label: "Peripheral Model", value: "MX Master 3S" },
-        { label: "Peripheral Serial Number", value: "SN-MS-12345" }
-      ]
-    ],
-    monitor: [
-      [
-        { label: "Monitor Brand", value: "Dell" },
-        { label: "Monitor Model", value: "UltraSharp U2723QE" },
-        { label: "Monitor Resolution", value: "3840x2160" },
-        { label: "Monitor Serial Number", value: "SN-MON-44129" }
-      ],
-      [
-        { label: "Monitor Brand", value: "Dell" },
-        { label: "Monitor Model", value: "UltraSharp U2723QE" },
-        { label: "Monitor Resolution", value: "3840x2160" },
-        { label: "Monitor Serial Number", value: "SN-MON-44130" }
-      ]
-    ]
-  };
-};
 
 const CARD_TEMPLATES: Record<string, any> = {
   "Asset Details": [
@@ -397,14 +142,27 @@ export default function Inventory({
   setShowRightSidebar,
   onBackToOverview,
 }: InventoryProps) {
-  const [selectedDepartment, setSelectedDepartment] = useState<string | null>(() => {
-    return localStorage.getItem("inventoryplus_selected_department");
-  });
-  const [selectedMemberIndex, setSelectedMemberIndex] = useState<number>(() => {
-    const saved = localStorage.getItem("inventoryplus_selected_member_index");
-    return saved !== null ? Number(saved) : -1;
-  });
-  const [workstationSpecs, setWorkstationSpecs] = useState<{ [key: string]: any }>({});
+  const {
+    selectedDepartment,
+    setSelectedDepartment,
+    selectedMemberIndex,
+    setSelectedMemberIndex,
+    cards,
+    members,
+    workstationSpecs,
+    isSubmittingMember,
+    memberList,
+    selectedMemberName,
+    selectedMemberCleanName,
+    currentMemberKey,
+    selectedMemberObj,
+    setWorkstationSpecs,
+    handleAddCardSubmit,
+    handleAddMemberSubmit,
+    handleSaveCardEdits,
+    handleDeleteCard,
+  } = useInventoryApi();
+
   const [editingCardTitle, setEditingCardTitle] = useState<string | null>(null);
   const [editingCardItems, setEditingCardItems] = useState<any[]>([]);
   const [addCardDropdownOpen, setAddCardDropdownOpen] = useState(false);
@@ -413,296 +171,42 @@ export default function Inventory({
     setAddCardDropdownOpen(false);
   }, [selectedMemberIndex, selectedDepartment]);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("inventoryplus_workstation_specs");
-    if (saved) {
-      try {
-        setWorkstationSpecs(JSON.parse(saved));
-      } catch (err) {
-        console.error("Error parsing saved workstation specs:", err);
-      }
-    }
-  }, []);
-
-  const [cards, setCards] = useState<any[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newDeptName, setNewDeptName] = useState("");
-
-  const fetchDepartments = async () => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/departments/`);
-      if (res.ok) {
-        const data = await res.json();
-        const loadedCards = data.map((dept: any) => ({
-          id: dept.id,
-          ...cardProps,
-          name: dept.name,
-        }));
-        setCards(loadedCards);
-      }
-    } catch (err) {
-      console.error("Error fetching departments:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchDepartments();
-  }, []);
 
   const handleAddCard = () => {
     setShowAddModal(true);
   };
 
-  const handleAddCardSubmit = async (e: React.FormEvent) => {
+  const onAddCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newDeptName.trim()) return;
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/departments/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: newDeptName.trim() }),
-      });
-      if (res.ok) {
-        setNewDeptName("");
-        setShowAddModal(false);
-        fetchDepartments();
-      }
-    } catch (err) {
-      console.error("Error adding department:", err);
+    const success = await handleAddCardSubmit(newDeptName);
+    if (success) {
+      setNewDeptName("");
+      setShowAddModal(false);
     }
   };
 
-  const [members, setMembers] = useState<any[]>([]);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberEmail, setNewMemberEmail] = useState("");
-  const [isSubmittingMember, setIsSubmittingMember] = useState(false);
 
-  useEffect(() => {
-    if (selectedDepartment) {
-      localStorage.setItem("inventoryplus_selected_department", selectedDepartment);
-    } else {
-      localStorage.removeItem("inventoryplus_selected_department");
-    }
-  }, [selectedDepartment]);
-
-  useEffect(() => {
-    localStorage.setItem("inventoryplus_selected_member_index", String(selectedMemberIndex));
-    if (selectedMemberIndex !== -1 && members && members[selectedMemberIndex]) {
-      localStorage.setItem("inventoryplus_selected_member_username", members[selectedMemberIndex].username);
-    } else if (selectedMemberIndex === -1) {
-      localStorage.removeItem("inventoryplus_selected_member_username");
-    }
-  }, [selectedMemberIndex, members]);
-
-  const fetchMembers = async (deptName: string) => {
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(deptName)}/users/`);
-      if (res.ok) {
-        const data = await res.json();
-        setMembers(data);
-
-        // Restore selectedMemberIndex based on the saved username
-        const savedUsername = localStorage.getItem("inventoryplus_selected_member_username");
-        if (savedUsername) {
-          const idx = data.findIndex((m: any) => m.username === savedUsername);
-          if (idx !== -1) {
-            setSelectedMemberIndex(idx);
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching department users:", err);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedDepartment) {
-      fetchMembers(selectedDepartment);
-    } else {
-      setMembers([]);
-    }
-  }, [selectedDepartment]);
-
-  const handleAddMemberSubmit = async (e: React.FormEvent) => {
+  const onAddMemberSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMemberName.trim() || !selectedDepartment || isSubmittingMember) return;
-
-    setIsSubmittingMember(true);
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/departments/${encodeURIComponent(selectedDepartment)}/users/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          username: newMemberName.trim(),
-          email: newMemberEmail.trim() || null,
-        }),
-      });
-      if (res.ok) {
-        setNewMemberName("");
-        setNewMemberEmail("");
-        setShowAddMemberModal(false);
-        fetchMembers(selectedDepartment);
-      }
-    } catch (err) {
-      console.error("Error adding team member:", err);
-    } finally {
-      setIsSubmittingMember(false);
+    if (!newMemberName.trim() || !selectedDepartment) return;
+    const success = await handleAddMemberSubmit(newMemberName, newMemberEmail);
+    if (success) {
+      setNewMemberName("");
+      setNewMemberEmail("");
+      setShowAddMemberModal(false);
     }
   };
 
-  const memberList = selectedDepartment ? members.map(m => {
-    return `${m.username}${m.email ? ` (${m.email})` : ""}`;
-  }) : [];
-
-  const selectedMemberName = selectedDepartment && selectedMemberIndex !== -1 && memberList[selectedMemberIndex]
-    ? memberList[selectedMemberIndex]
-    : "";
-  const selectedMemberCleanName = selectedMemberName ? selectedMemberName.split(' (')[0] : "";
-  const currentMemberKey = selectedDepartment && selectedMemberCleanName
-    ? `${selectedDepartment}-${selectedMemberCleanName}`
-    : "";
-
-  const selectedMemberObj = selectedDepartment && selectedMemberIndex !== -1 && members[selectedMemberIndex]
-    ? members[selectedMemberIndex]
-    : null;
-
-  useEffect(() => {
-    if (selectedMemberObj && selectedMemberObj.id) {
-      const fetchSpecs = async () => {
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/users/${selectedMemberObj.id}/specs/`);
-          if (res.ok) {
-            const data = await res.json();
-            let specsObj = {};
-            if (Object.keys(data).length === 0) {
-              if (selectedMemberObj.username === "Jack Sparrow" || selectedMemberObj.username === "Sarah Connor") {
-                specsObj = getDefaultWorkstationSpecs(selectedMemberObj.username, selectedDepartment || "");
-              } else {
-                specsObj = {
-                  assets: [],
-                  os: [],
-                  motherboard: [],
-                  cpu: [],
-                  ram: [],
-                  storage: [],
-                  gpu: [],
-                  monitor: [],
-                  network: [],
-                  peripherals: []
-                };
-              }
-            } else {
-              specsObj = data;
-            }
-            setWorkstationSpecs(prev => ({
-              ...prev,
-              [currentMemberKey]: specsObj
-            }));
-          }
-        } catch (err) {
-          console.error("Error fetching workstation specs:", err);
-        }
-      };
-      fetchSpecs();
-    }
-  }, [selectedMemberObj, currentMemberKey, selectedDepartment]);
-
-  const saveSpecsToDb = async (updatedSpecs: any) => {
-    if (!selectedMemberObj || !selectedMemberObj.id) return;
-    try {
-      await fetch(`${API_BASE_URL}/api/users/${selectedMemberObj.id}/specs/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(updatedSpecs)
-      });
-    } catch (err) {
-      console.error("Error saving workstation specs:", err);
-    }
-  };
-
-  const handleSaveCardEdits = (e: React.FormEvent) => {
+  const onSaveCardEdits = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!currentMemberKey || !editingCardTitle) return;
-
-    let categoryKey = "";
-    if (editingCardTitle === "Asset Details") categoryKey = "assets";
-    else if (editingCardTitle === "Operating System") categoryKey = "os";
-    else if (editingCardTitle === "Motherboard") categoryKey = "motherboard";
-    else if (editingCardTitle === "CPU") categoryKey = "cpu";
-    else if (editingCardTitle === "RAM") categoryKey = "ram";
-    else if (editingCardTitle === "Storage") categoryKey = "storage";
-    else if (editingCardTitle === "GPU") categoryKey = "gpu";
-    else if (editingCardTitle === "Network") categoryKey = "network";
-    else if (editingCardTitle === "Peripherals") categoryKey = "peripherals";
-    else if (editingCardTitle === "Monitor") categoryKey = "monitor";
-
-    if (!categoryKey) return;
-
-    const saved = localStorage.getItem("inventoryplus_workstation_specs");
-    let currentSpecsDict: any = {};
-    if (saved) {
-      try {
-        currentSpecsDict = JSON.parse(saved);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    const currentMemberSpecs = workstationSpecs[currentMemberKey] || currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
-
-    const MULTI_INSTANCE_CATEGORIES = ["os", "ram", "storage", "monitor", "peripherals"];
-    const isMulti = editingCardItems.length > 0 && Array.isArray(editingCardItems[0]);
-
-    let formattedItems: any;
-    if (isMulti) {
-      // Already nested array format [[{label, value}, ...], ...]
-      formattedItems = (editingCardItems as any[][]).map(moduleItems =>
-        moduleItems.map(item => ({
-          label: item.label,
-          value: item.value
-        }))
-      );
-    } else {
-      // Flat array format [{label, value}, ...]
-      const flatItems = (editingCardItems as any[]).map(item => ({
-        label: item.label,
-        value: item.value
-      }));
-      // Wrap in nested array if this category expects multi-instance format
-      if (MULTI_INSTANCE_CATEGORIES.includes(categoryKey)) {
-        formattedItems = [flatItems];
-      } else {
-        formattedItems = flatItems;
-      }
-    }
-
-    let finalFormattedItems = formattedItems;
-    if (categoryKey === "assets" && Array.isArray(formattedItems)) {
-      const existingUuid = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Asset UUID");
-      const existingOmada = (currentMemberSpecs.assets || []).find((item: any) => item.label === "Omada Username");
-      const extra = [];
-      if (existingUuid) extra.push(existingUuid);
-      if (existingOmada) extra.push(existingOmada);
-      finalFormattedItems = [...extra, ...formattedItems.filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")];
-    }
-
-    const updatedSpecs = {
-      ...currentMemberSpecs,
-      [categoryKey]: finalFormattedItems
-    };
-
-    const newWorkstationSpecs = {
-      ...workstationSpecs,
-      [currentMemberKey]: updatedSpecs
-    };
-
-    setWorkstationSpecs(newWorkstationSpecs);
-    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
-    saveSpecsToDb(updatedSpecs);
+    if (!editingCardTitle) return;
+    handleSaveCardEdits(editingCardTitle, editingCardItems);
     setEditingCardTitle(null);
   };
 
@@ -757,50 +261,8 @@ export default function Inventory({
     setEditingCardItems(JSON.parse(JSON.stringify(formItems)));
   };
 
-  const handleDeleteCard = (cardTitle: string) => {
-    if (!window.confirm(`Are you sure you want to delete all specs for ${cardTitle}?`)) {
-      return;
-    }
-
-    let categoryKey = "";
-    if (cardTitle === "Asset Details") categoryKey = "assets";
-    else if (cardTitle === "Operating System") categoryKey = "os";
-    else if (cardTitle === "Motherboard") categoryKey = "motherboard";
-    else if (cardTitle === "CPU") categoryKey = "cpu";
-    else if (cardTitle === "RAM") categoryKey = "ram";
-    else if (cardTitle === "Storage") categoryKey = "storage";
-    else if (cardTitle === "GPU") categoryKey = "gpu";
-    else if (cardTitle === "Network") categoryKey = "network";
-    else if (cardTitle === "Peripherals") categoryKey = "peripherals";
-    else if (cardTitle === "Monitor") categoryKey = "monitor";
-
-    if (!categoryKey) return;
-
-    const saved = localStorage.getItem("inventoryplus_workstation_specs");
-    let currentSpecsDict: Record<string, any> = {};
-    if (saved) {
-      try {
-        currentSpecsDict = JSON.parse(saved);
-      } catch (err) {
-        console.error(err);
-      }
-    }
-
-    const currentMemberSpecs = workstationSpecs[currentMemberKey] || currentSpecsDict[currentMemberKey] || getDefaultWorkstationSpecs(selectedMemberCleanName, selectedDepartment || "");
-
-    const updatedSpecs = {
-      ...currentMemberSpecs,
-      [categoryKey]: []
-    };
-
-    const newWorkstationSpecs = {
-      ...workstationSpecs,
-      [currentMemberKey]: updatedSpecs
-    };
-
-    setWorkstationSpecs(newWorkstationSpecs);
-    localStorage.setItem("inventoryplus_workstation_specs", JSON.stringify(newWorkstationSpecs));
-    saveSpecsToDb(updatedSpecs);
+  const onDeleteCard = (cardTitle: string) => {
+    handleDeleteCard(cardTitle);
     setEditingCardTitle(null);
   };
 
@@ -862,9 +324,7 @@ export default function Inventory({
             </div>
           </div>          {/* Diagnostic Grid - Only shown when a member is selected */}
           {selectedMemberIndex !== -1 && memberList[selectedMemberIndex] && (() => {
-            const selectedMemberName = memberList[selectedMemberIndex];
-            const name = selectedMemberName.split(' (')[0];
-
+            const name = memberList[selectedMemberIndex].split(' (')[0];
             const specs = workstationSpecs[currentMemberKey] || getDefaultWorkstationSpecs(name, selectedDepartment || "");
 
             const handleCardClick = (cardTitle: string, currentItems: any[]) => {
@@ -897,278 +357,15 @@ export default function Inventory({
               }));
             };
 
-            const ALL_CATEGORIES = [
-              { title: "Asset Details", key: "assets" },
-              { title: "Operating System", key: "os" },
-              { title: "Motherboard", key: "motherboard" },
-              { title: "CPU", key: "cpu" },
-              { title: "RAM", key: "ram" },
-              { title: "Storage", key: "storage" },
-              { title: "GPU", key: "gpu" },
-              { title: "Monitor", key: "monitor" },
-              { title: "Network", key: "network" },
-              { title: "Peripherals", key: "peripherals" }
-            ];
-
-            const hiddenCategories = ALL_CATEGORIES.filter(cat => {
-              const val = specs[cat.key];
-              if (!val || val.length === 0) return true;
-              if (cat.key === "assets") {
-                const displayable = (val || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username");
-                return !displayable.some((item: any) => item.value !== "");
-              }
-              return false;
-            });
-
             return (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
-                  <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-h)', margin: 0 }}>
-                    {name}'s Workstation Diagnostics
-                  </h3>
-                  {hiddenCategories.length > 0 && (
-                    <div style={{ position: "relative" }}>
-                      <button
-                        onClick={() => setAddCardDropdownOpen(!addCardDropdownOpen)}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "8px",
-                          padding: "8px 16px",
-                          borderRadius: "10px",
-                          border: "1px solid var(--border)",
-                          backgroundColor: "var(--code-bg)",
-                          color: "var(--text-h)",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          cursor: "pointer",
-                          transition: "all 0.2s",
-                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
-                          outline: "none"
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.borderColor = "var(--text-muted)";
-                          e.currentTarget.style.backgroundColor = "rgba(255, 255, 255, 0.04)";
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.borderColor = "var(--border)";
-                          e.currentTarget.style.backgroundColor = "var(--code-bg)";
-                        }}
-                      >
-                        <span>+ Add Hardware Specification</span>
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                          style={{
-                            transform: addCardDropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
-                            transition: "transform 0.2s",
-                            stroke: "currentColor",
-                            strokeWidth: "2",
-                            strokeLinecap: "round"
-                          }}
-                        >
-                          <path d="M2 4L6 8L10 4" />
-                        </svg>
-                      </button>
-
-                      {addCardDropdownOpen && (
-                        <>
-                          <div
-                            onClick={() => setAddCardDropdownOpen(false)}
-                            style={{
-                              position: "fixed",
-                              inset: 0,
-                              zIndex: 998,
-                              cursor: "default"
-                            }}
-                          />
-                          <div
-                            style={{
-                              position: "absolute",
-                              top: "calc(100% + 6px)",
-                              right: 0,
-                              zIndex: 999,
-                              minWidth: "220px",
-                              backgroundColor: "var(--bg)",
-                              border: "1px solid var(--border)",
-                              borderRadius: "12px",
-                              boxShadow: "0 12px 24px -4px rgba(0, 0, 0, 0.12), 0 4px 12px -2px rgba(0, 0, 0, 0.08)",
-                              padding: "6px",
-                              display: "flex",
-                              flexDirection: "column",
-                              gap: "2px"
-                            }}
-                          >
-                            {hiddenCategories.map(cat => (
-                              <button
-                                key={cat.key}
-                                onClick={() => {
-                                  handleAddSpecCard(cat.title, specs);
-                                  setAddCardDropdownOpen(false);
-                                }}
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  width: "100%",
-                                  padding: "8px 12px",
-                                  border: "none",
-                                  backgroundColor: "transparent",
-                                  color: "var(--text-h)",
-                                  fontSize: "13px",
-                                  fontWeight: 500,
-                                  textAlign: "left",
-                                  borderRadius: "8px",
-                                  cursor: "pointer",
-                                  transition: "all 0.15s"
-                                }}
-                                onMouseOver={(e) => {
-                                  e.currentTarget.style.backgroundColor = "#7F56D9";
-                                  e.currentTarget.style.color = "#ffffff";
-                                }}
-                                onMouseOut={(e) => {
-                                  e.currentTarget.style.backgroundColor = "transparent";
-                                  e.currentTarget.style.color = "var(--text-h)";
-                                }}
-                              >
-                                {cat.title}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
-                  gap: '24px',
-                  width: '100%',
-                }}>
-                  {specs.assets && (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username").some((item: any) => item.value !== "") && (
-                    <InfoCard
-                      title="Asset Details"
-                      icon={<MonitorIcon />}
-                      variant="green"
-                      items={(specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username")}
-                      onEdit={() => handleCardClick("Asset Details", (specs.assets || []).filter((item: any) => item.label !== "Asset UUID" && item.label !== "Omada Username"))}
-                    />
-                  )}
-
-                  {hiddenCategories.length === ALL_CATEGORIES.length && (
-                    <div style={{
-                      gridColumn: "1 / -1",
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      padding: "48px 24px",
-                      border: "2px dashed var(--border)",
-                      borderRadius: "16px",
-                      color: "var(--text)",
-                      textAlign: "center",
-                      gap: "8px",
-                      backgroundColor: "rgba(255, 255, 255, 0.02)"
-                    }}>
-                      <span style={{ fontSize: "15px", fontWeight: 600, color: "var(--text-h)" }}>No specifications added yet</span>
-                      <span style={{ fontSize: "13px", opacity: 0.8 }}>Select a category from the dropdown above to start configuring this workstation.</span>
-                    </div>
-                  )}
-
-                  {specs.os && specs.os.length > 0 && (
-                    <InfoCard
-                      title="Operating System"
-                      icon={<GlobeIcon />}
-                      variant="green"
-                      items={normalizeSpecCategory(specs.os)}
-                      onEdit={() => handleCardClick("Operating System", normalizeSpecCategory(specs.os))}
-                    />
-                  )}
-
-                  {specs.motherboard && specs.motherboard.length > 0 && (
-                    <InfoCard
-                      title="Motherboard"
-                      icon={<CpuIcon />}
-                      variant="orange"
-                      items={specs.motherboard}
-                      onEdit={() => handleCardClick("Motherboard", specs.motherboard)}
-                    />
-                  )}
-
-                  {specs.cpu && specs.cpu.length > 0 && (
-                    <InfoCard
-                      title="CPU"
-                      icon={<CpuIcon />}
-                      variant="orange"
-                      items={specs.cpu}
-                      onEdit={() => handleCardClick("CPU", specs.cpu)}
-                    />
-                  )}
-
-                  {specs.ram && specs.ram.length > 0 && (
-                    <InfoCard
-                      title="RAM"
-                      icon={<MonitorIcon />}
-                      variant="blue"
-                      items={normalizeSpecCategory(specs.ram)}
-                      onEdit={() => handleCardClick("RAM", normalizeSpecCategory(specs.ram))}
-                    />
-                  )}
-
-                  {specs.storage && specs.storage.length > 0 && (
-                    <InfoCard
-                      title="Storage"
-                      icon={<MonitorIcon />}
-                      variant="blue"
-                      items={normalizeSpecCategory(specs.storage)}
-                      onEdit={() => handleCardClick("Storage", normalizeSpecCategory(specs.storage))}
-                    />
-                  )}
-
-                  {specs.gpu && specs.gpu.length > 0 && (
-                    <InfoCard
-                      title="GPU"
-                      icon={<MonitorIcon />}
-                      variant="blue"
-                      items={specs.gpu}
-                      onEdit={() => handleCardClick("GPU", specs.gpu)}
-                    />
-                  )}
-
-                  {specs.monitor && specs.monitor.length > 0 && (
-                    <InfoCard
-                      title="Monitor"
-                      icon={<MonitorIcon />}
-                      variant="blue"
-                      items={normalizeSpecCategory(specs.monitor)}
-                      onEdit={() => handleCardClick("Monitor", normalizeSpecCategory(specs.monitor))}
-                    />
-                  )}
-
-                  {specs.network && specs.network.length > 0 && (
-                    <InfoCard
-                      title="Network"
-                      icon={<GlobeIcon />}
-                      variant="beige"
-                      items={specs.network}
-                      onEdit={() => handleCardClick("Network", specs.network)}
-                    />
-                  )}
-
-                  {specs.peripherals && specs.peripherals.length > 0 && (
-                    <InfoCard
-                      title="Peripherals"
-                      icon={<KeyboardIcon />}
-                      variant="green"
-                      items={normalizeSpecCategory(specs.peripherals)}
-                      onEdit={() => handleCardClick("Peripherals", normalizeSpecCategory(specs.peripherals))}
-                    />
-                  )}
-                </div>
-              </div>
+              <DiagnosticsGrid
+                specs={specs}
+                memberName={name}
+                onCardEdit={handleCardClick}
+                onAddSpecCard={handleAddSpecCard}
+                addCardDropdownOpen={addCardDropdownOpen}
+                setAddCardDropdownOpen={setAddCardDropdownOpen}
+              />
             );
           })()}
 
@@ -1248,7 +445,7 @@ export default function Inventory({
           setShowAddModal(false);
           setNewDeptName("");
         }}
-        onSubmit={handleAddCardSubmit}
+        onSubmit={onAddCardSubmit}
       />
 
       {/* Add Member Modal */}
@@ -1259,7 +456,7 @@ export default function Inventory({
           setNewMemberName("");
           setNewMemberEmail("");
         }}
-        onSubmit={handleAddMemberSubmit}
+        onSubmit={onAddMemberSubmit}
         newMemberName={newMemberName}
         setNewMemberName={setNewMemberName}
         newMemberEmail={newMemberEmail}
@@ -1273,8 +470,8 @@ export default function Inventory({
         setEditingCardTitle={setEditingCardTitle}
         editingCardItems={editingCardItems}
         setEditingCardItems={setEditingCardItems}
-        handleSaveCardEdits={handleSaveCardEdits}
-        handleDeleteCard={handleDeleteCard}
+        handleSaveCardEdits={onSaveCardEdits}
+        handleDeleteCard={onDeleteCard}
       />
     </div>
   );
