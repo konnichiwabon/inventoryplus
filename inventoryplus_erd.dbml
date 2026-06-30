@@ -1,0 +1,107 @@
+// Use this DBML code on dbdiagram.io to generate your updated ERD
+
+Table DEPARTMENT {
+  department_id int [pk, increment]
+  department_name varchar
+}
+
+Table USERS {
+  user_id int [pk, increment]
+  username varchar
+  department_id int [ref: > DEPARTMENT.department_id]
+}
+
+Table ASSETS {
+  asset_id int [pk, increment]
+  asset_uuid uuid [unique, not null]
+  asset_tag varchar [unique, not null]
+  hostname varchar
+  department_id int [ref: > DEPARTMENT.department_id]
+  user_id int [ref: > USERS.user_id]
+  date_recorded date
+}
+
+Table OPERATING_SYSTEM {
+  os_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  os_name varchar
+  os_version varchar
+  os_architecture varchar
+  partition varchar
+}
+
+Table MOTHERBOARD {
+  motherboard_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  serial_number varchar
+  bios_serial_number varchar
+  manufacturer varchar
+  model varchar
+}
+
+Table CPU {
+  cpu_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  model varchar
+  cores int
+  threads int
+  manufacturer varchar
+}
+
+Table RAM {
+  ram_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  serial_number varchar
+  model varchar
+  speed varchar
+  capacity varchar
+  slot_number varchar
+}
+
+Table STORAGE {
+  storage_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  serial_number varchar
+  type varchar
+  capacity varchar
+  interface varchar
+}
+
+Table GPU {
+  gpu_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  serial_number varchar
+  manufacturer varchar
+  model varchar
+  vram varchar
+  driver_version varchar
+}
+
+Table MONITOR {
+  monitor_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  brand varchar
+  model varchar
+  resolution varchar
+  serial_number varchar
+}
+
+Table PERIPHERALS {
+  peripheral_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  type varchar
+  brand varchar
+  model varchar
+  serial_number varchar
+}
+
+Table NETWORK {
+  network_id int [pk, increment]
+  asset_id int [ref: > ASSETS.asset_id]
+  mac_address varchar
+  dhcp_enabled boolean
+  current_ip varchar
+  port_number varchar
+  vlan_id varchar
+  omada_username varchar
+}

@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from departments.views import department_list, department_users_list, user_workstation_specs, delete_user
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/departments/', department_list, name='department_list'),
+    path('api/departments/<str:dept_name>/users/', department_users_list, name='department_users_list'),
+    path('api/users/<int:user_id>/specs/', user_workstation_specs, name='user_workstation_specs'),
+    path('api/users/<int:user_id>/', delete_user, name='delete_user'),
 ]
