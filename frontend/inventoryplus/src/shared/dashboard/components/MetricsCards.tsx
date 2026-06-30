@@ -1,14 +1,14 @@
+import { type ReactNode } from 'react';
+
 export interface MetricItem {
   label: string;
   value: number;
   change: string;
   changeType: 'positive' | 'negative' | 'neutral';
-  icon: React.ReactNode;
+  icon: ReactNode;
   iconBg: string;
   iconColor: string;
 }
-
-import React from 'react';
 
 const DEFAULT_METRICS: MetricItem[] = [
   {

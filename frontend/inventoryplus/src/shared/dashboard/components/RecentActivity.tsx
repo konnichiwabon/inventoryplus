@@ -1,13 +1,13 @@
-import React from 'react';
+import { type ReactNode } from 'react';
 
 export interface ActivityItem {
   type: 'added' | 'maintenance' | 'assigned';
-  description: React.ReactNode;
+  description: ReactNode;
   actor: string;
   timestamp: string;
 }
 
-const ICON_MAP: Record<string, { bg: string; color: string; icon: React.ReactNode }> = {
+const ICON_MAP: Record<string, { bg: string; color: string; icon: ReactNode }> = {
   added: {
     bg: 'bg-[#ECFDF3] dark:bg-[#027A48]/10',
     color: 'text-[#12B76A]',

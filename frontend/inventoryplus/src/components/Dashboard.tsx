@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import MetricsCards from '../shared/dashboard/components/MetricsCards';
 import AssetsTable, { type Asset } from '../shared/dashboard/components/AssetTable';
 import DonutChart from '../shared/dashboard/components/DonutChart';

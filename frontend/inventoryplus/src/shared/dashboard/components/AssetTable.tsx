@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, type CSSProperties } from 'react';
 
 // ─── Types ───────────────────────────────────────────────────────
 export interface Asset {
@@ -25,7 +25,7 @@ const CATEGORIES = ['All Categories', 'Laptop', 'Monitor', 'Printer', 'Server', 
 const STATUSES = ['All Status', 'In Use', 'Maintenance', 'Available', 'Retired'];
 const PAGE_SIZE = 8;
 
-const STATUS_STYLES: Record<string, React.CSSProperties> = {
+const STATUS_STYLES: Record<string, CSSProperties> = {
   'In Use':       { backgroundColor: '#ECFDF3', color: '#027A48' },
   'Maintenance':  { backgroundColor: '#FFFAEB', color: '#B54708' },
   'Available':    { backgroundColor: '#EFF8FF', color: '#175CD3' },
