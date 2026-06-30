@@ -74,7 +74,10 @@ function App() {
             setShowRightSidebar={setShowRightSidebar}
           />
         ) : isDashboardView ? (
-          <Dashboard />
+          <Dashboard
+            showRightSidebar={showRightSidebar}
+            setShowRightSidebar={setShowRightSidebar}
+          />
         ) : (
           <div style={{ padding: '40px', textAlign: 'center', width: '100%', color: 'var(--text)' }}>
             <h2 style={{ fontSize: '24px', fontWeight: 600, color: 'var(--text-h)' }}>
